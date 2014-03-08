@@ -2,7 +2,9 @@
 
 #include <cstdlib>
 #include <ctime>
+#include <iostream>
 #include <fstream>
+#include <QDebug>
 #include "cpuregisters.h"
 #include "keyboard.h"
 #include "memory.h"
@@ -155,6 +157,8 @@ void Core::xx() {
     log(registers->pc-1);
     log("\n");
     exit(EXIT_FAILURE);*/
+    qDebug() << "Unknown opcode: " << QString("%1").arg(memory->read(registers->pc-1), 0, 16);
+    exit(1);
 }
 
 void Core::CBxx() {
@@ -165,6 +169,8 @@ void Core::CBxx() {
     log(registers->pc-2);
     log("\n");
     exit(EXIT_FAILURE);*/
+    qDebug() << "Unknown opcode: cb" << QString("%1").arg(memory->read(registers->pc-1), 0, 16);
+    exit(1);
 }
 
 //----------8-BIT LOADS----------//
@@ -487,7 +493,7 @@ void Core::RRCA() { uint8_t lsb = registers->getA() & 0x1; registers->setA((regi
 void Core::RLCA() { uint8_t msb = registers->getA() & 0x80; registers->setA((registers->getA() << 1) | (msb >> 7)); registers->setZeroFlag(registers->getA() == 0); registers->setSubFlag(false); registers->setHalfCarryFlag(false); registers->setCarryFlag(msb); lastClocks = 2; }
 
 //||===============================================||
-//||======================OB=======================||
+//||======================CB=======================||
 //||====================OPCODES====================||
 //||===============================================||
 
@@ -526,6 +532,15 @@ void Core::RRE() { uint8_t lsb = registers->getE() & 0x01; registers->setE((((re
 void Core::RRH() { uint8_t lsb = registers->getH() & 0x01; registers->setH((((registers->getCarryFlag()) ? 0x1 : 0x0) << 7) | (registers->getH() >> 1)); registers->setZeroFlag(registers->getH() == 0); registers->setSubFlag(false); registers->setHalfCarryFlag(false); registers->setCarryFlag(lsb); lastClocks = 2; }
 void Core::RRL() { uint8_t lsb = registers->getL() & 0x01; registers->setL((((registers->getCarryFlag()) ? 0x1 : 0x0) << 7) | (registers->getL() >> 1)); registers->setZeroFlag(registers->getL() == 0); registers->setSubFlag(false); registers->setHalfCarryFlag(false); registers->setCarryFlag(lsb); lastClocks = 2; }
 void Core::RRHLM() { uint8_t lsb = memory->read(registers->getHL()) & 0x01; memory->write(registers->getHL(), (((registers->getCarryFlag()) ? 0x1 : 0x0) << 7) | (memory->read(registers->getHL()) >> 1)); registers->setZeroFlag(memory->read(registers->getHL()) == 0); registers->setSubFlag(false); registers->setHalfCarryFlag(false); registers->setCarryFlag(lsb); lastClocks = 2; }
+
+void Core::RES0A() { registers->setA(registers->getA() & 0xFE); lastClocks = 2; }
+void Core::RES0B() { registers->setB(registers->getB() & 0xFE); lastClocks = 2; }
+void Core::RES0C() { registers->setC(registers->getC() & 0xFE); lastClocks = 2; }
+void Core::RES0D() { registers->setD(registers->getD() & 0xFE); lastClocks = 2; }
+void Core::RES0E() { registers->setE(registers->getE() & 0xFE); lastClocks = 2; }
+void Core::RES0H() { registers->setH(registers->getH() & 0xFE); lastClocks = 2; }
+void Core::RES0L() { registers->setL(registers->getL() & 0xFE); lastClocks = 2; }
+void Core::RES0HL() { memory->write(registers->getHL(), memory->read(registers->getHL()) & 0xFE); lastClocks = 4; }
 
 const Core::opCode Core::opCodes[] = {
     //00
@@ -652,8 +667,8 @@ const Core::opCode Core::opCodesCB[] = {
     &Core::CBxx,    &Core::CBxx,    &Core::CBxx,    &Core::CBxx,
     &Core::CBxx,    &Core::CBxx,    &Core::CBxx,    &Core::CBxx,
     //CB80
-    &Core::CBxx,    &Core::CBxx,    &Core::CBxx,    &Core::CBxx,
-    &Core::CBxx,    &Core::CBxx,    &Core::CBxx,    &Core::CBxx,
+    &Core::RES0B,    &Core::RES0C,    &Core::RES0D,    &Core::RES0E,
+    &Core::RES0H,    &Core::RES0L,    &Core::RES0HL,    &Core::RES0A,
     &Core::CBxx,    &Core::CBxx,    &Core::CBxx,    &Core::CBxx,
     &Core::CBxx,    &Core::CBxx,    &Core::CBxx,    &Core::CBxx,
     //CB90

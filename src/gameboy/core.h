@@ -318,6 +318,14 @@ class Core {
     void RRH();
     void RRL();
     void RRHLM();
+    void RES0A();
+    void RES0B();
+    void RES0C();
+    void RES0D();
+    void RES0E();
+    void RES0H();
+    void RES0L();
+    void RES0HL();
 };
 }
 

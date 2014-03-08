@@ -1,1 +1,7 @@
 *.gb
+ui_*
+moc_*
+*.o
+*.swp
+Makefile
+gameboy

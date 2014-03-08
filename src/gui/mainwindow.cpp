@@ -12,7 +12,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow) {
     ui->setupUi(this);
 
-    gameboyCore = new gameboy::Core("ttt.gb");
+    gameboyCore = new gameboy::Core("cpu_instrs.gb");
     keyboard = gameboyCore->getKeyboard();
 
     screenWidget = new ScreenWidget(this);
