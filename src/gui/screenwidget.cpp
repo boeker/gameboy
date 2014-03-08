@@ -18,8 +18,6 @@ void ScreenWidget::paintEvent(QPaintEvent *event) {
 }
 
 void ScreenWidget::initializeGL() {
-    glClearColor(0.0, 0.0, 0.0, 0.0);
-
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glOrtho(0, 160, 0, 144, 0, 1);
