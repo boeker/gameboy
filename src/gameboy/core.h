@@ -32,6 +32,9 @@ class Core {
     void opcdump();
     void regdump();
     void sysdump();
+    void handleCB();
+    void xx();
+    void CBxx();
 
  private:
     CPURegisters *registers;
@@ -47,9 +50,6 @@ class Core {
     static const opCode opCodesCB[];
 
  private:
-    void handleCB();
-    void xx();
-    void CBxx();
     void LDrnA();
     void LDrnB();
     void LDrnC();

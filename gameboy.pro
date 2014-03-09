@@ -18,6 +18,8 @@ SOURCES += src/main.cpp \
            src/gui/screenwidget.cpp \
            src/gui/emuthread.cpp \
            src/gameboy/core.cpp \
+           src/gameboy/core_opcodes.cpp \
+           src/gameboy/core_opcodetables.cpp \
            src/gameboy/cpuregisters.cpp \
            src/gameboy/keyboard.cpp \
            src/gameboy/memory.cpp \
