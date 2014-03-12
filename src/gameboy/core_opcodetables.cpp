@@ -11,7 +11,7 @@ const Core::opCode Core::opCodes[] = {
     &Core::xx,       &Core::LDDEnn,   &Core::LDDEMA,   &Core::INCDE,
     &Core::INCrD,    &Core::DECrD,    &Core::LDrnD,    &Core::xx,
     &Core::JRn,      &Core::ADDHLDE,  &Core::LDADEM,   &Core::DECDE,
-    &Core::INCrE,    &Core::DECrE,    &Core::LDrnE,    &Core::xx,
+    &Core::INCrE,    &Core::DECrE,    &Core::LDrnE,    &Core::RRANCB,
     //20
     &Core::JRNZn,    &Core::LDHLnn,   &Core::LDIHLA,   &Core::INCHL,
     &Core::INCrH,    &Core::DECrH,    &Core::LDrnH,    &Core::xx,
@@ -103,8 +103,8 @@ const Core::opCode Core::opCodesCB[] = {
     //CB30
     &Core::SWAPrB,   &Core::SWAPrC,   &Core::SWAPrD,   &Core::SWAPrE,
     &Core::SWAPrH,   &Core::SWAPrL,   &Core::SWAPrHLm, &Core::SWAPrA,
-    &Core::CBxx,     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,
-    &Core::CBxx,     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,
+    &Core::SRLB,     &Core::SRLC,     &Core::SRLD,     &Core::SRLE,
+    &Core::SRLH,     &Core::SRLL,     &Core::SRLHL,     &Core::SRLA,
     //CB40
     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,
     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,

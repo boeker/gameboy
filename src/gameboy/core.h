@@ -286,6 +286,7 @@ class Core {
     void SCF();
     void CPL();
     void RRCA();
+    void RRANCB();
     void RLCA();
     void SWAPrA();
     void SWAPrB();
@@ -326,6 +327,14 @@ class Core {
     void RES0H();
     void RES0L();
     void RES0HL();
+    void SRLA();
+    void SRLB();
+    void SRLC();
+    void SRLD();
+    void SRLE();
+    void SRLH();
+    void SRLL();
+    void SRLHL();
 };
 }
 

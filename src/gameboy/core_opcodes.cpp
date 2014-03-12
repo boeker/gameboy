@@ -320,6 +320,8 @@ void Core::CPL() { registers->setA(registers->getA()^0xFF); registers->setSubFla
 //----------ROTATES AND SHIFTS----------//
 void Core::RRCA() { uint8_t lsb = registers->getA() & 0x1; registers->setA((registers->getA() >> 1) | (lsb << 7)); registers->setZeroFlag(registers->getA() == 0); registers->setSubFlag(false); registers->setHalfCarryFlag(false); registers->setCarryFlag(lsb); lastClocks = 1; }
 
+void Core::RRANCB() { uint8_t lsb = registers->getA() & 0x01; registers->setA((((registers->getCarryFlag()) ? 0x1 : 0x0) << 7) | (registers->getA() >> 1)); registers->setZeroFlag(registers->getA() == 0); registers->setSubFlag(false); registers->setHalfCarryFlag(false); registers->setCarryFlag(lsb); lastClocks = 1; }
+
 //Also a CB Opcode
 void Core::RLCA() { uint8_t msb = registers->getA() & 0x80; registers->setA((registers->getA() << 1) | (msb >> 7)); registers->setZeroFlag(registers->getA() == 0); registers->setSubFlag(false); registers->setHalfCarryFlag(false); registers->setCarryFlag(msb); lastClocks = 2; }
 
@@ -372,4 +374,13 @@ void Core::RES0E() { registers->setE(registers->getE() & 0xFE); lastClocks = 2; 
 void Core::RES0H() { registers->setH(registers->getH() & 0xFE); lastClocks = 2; }
 void Core::RES0L() { registers->setL(registers->getL() & 0xFE); lastClocks = 2; }
 void Core::RES0HL() { memory->write(registers->getHL(), memory->read(registers->getHL()) & 0xFE); lastClocks = 4; }
+
+void Core::SRLA() { registers->setCarryFlag(registers->getA() & 0x1); registers->setA(registers->getA() >> 1); registers->setZeroFlag(registers->getA() == 0); registers->setSubFlag(false); registers->setHalfCarryFlag(false); lastClocks = 2; }
+void Core::SRLB() { registers->setCarryFlag(registers->getB() & 0x1); registers->setB(registers->getB() >> 1); registers->setZeroFlag(registers->getB() == 0); registers->setSubFlag(false); registers->setHalfCarryFlag(false); lastClocks = 2; }
+void Core::SRLC() { registers->setCarryFlag(registers->getC() & 0x1); registers->setC(registers->getC() >> 1); registers->setZeroFlag(registers->getC() == 0); registers->setSubFlag(false); registers->setHalfCarryFlag(false); lastClocks = 2; }
+void Core::SRLD() { registers->setCarryFlag(registers->getD() & 0x1); registers->setD(registers->getD() >> 1); registers->setZeroFlag(registers->getD() == 0); registers->setSubFlag(false); registers->setHalfCarryFlag(false); lastClocks = 2; }
+void Core::SRLE() { registers->setCarryFlag(registers->getE() & 0x1); registers->setE(registers->getE() >> 1); registers->setZeroFlag(registers->getE() == 0); registers->setSubFlag(false); registers->setHalfCarryFlag(false); lastClocks = 2; }
+void Core::SRLH() { registers->setCarryFlag(registers->getH() & 0x1); registers->setH(registers->getH() >> 1); registers->setZeroFlag(registers->getH() == 0); registers->setSubFlag(false); registers->setHalfCarryFlag(false); lastClocks = 2; }
+void Core::SRLL() { registers->setCarryFlag(registers->getL() & 0x1); registers->setL(registers->getL() >> 1); registers->setZeroFlag(registers->getL() == 0); registers->setSubFlag(false); registers->setHalfCarryFlag(false); lastClocks = 2; }
+void Core::SRLHL() { registers->setCarryFlag(memory->read(registers->getHL()) & 0x1); memory->write(registers->getHL(), memory->read(registers->getHL()) >> 1); registers->setZeroFlag(memory->read(registers->getHL()) == 0); registers->setSubFlag(false); registers->setHalfCarryFlag(false); lastClocks = 4; }
 }

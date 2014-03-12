@@ -2,7 +2,7 @@ QT += core gui widgets opengl
 TEMPLATE = app
 TARGET = gameboy
 INCLUDEPATH += src
-CONFIG += c++11
+CONFIG += c++11 console
 
 HEADERS += src/gui/mainwindow.h \
            src/gui/screenwidget.h \
