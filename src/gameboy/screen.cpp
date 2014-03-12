@@ -193,7 +193,7 @@ void Screen::renderBackground() {
     uint8_t scrollY = memory->read(0xFF42);
 
     for (int i = 0; i < 160; ++i) {
-        framebuffer[line*160+i] = mapFrameBuffer[scrollY+line][scrollX+i];
+        framebuffer[line*160+i] = mapFrameBuffer[(scrollY+line) % 0xFF][(scrollX+i) % 0xFF];
     }
 }
 
