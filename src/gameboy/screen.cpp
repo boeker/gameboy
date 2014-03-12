@@ -193,7 +193,7 @@ void Screen::renderBackground() {
     uint8_t scrollY = memory->read(0xFF42);
 
     for (int i = 0; i < 160; ++i) {
-        framebuffer[(160*144)-line*160+i] = mapFrameBuffer[scrollY+line][scrollX+i];
+        framebuffer[line*160+i] = mapFrameBuffer[scrollY+line][scrollX+i];
     }
 }
 
@@ -242,8 +242,8 @@ void Screen::renderSprites() {
         decodeTile(tileAddr, palette, yFlip, xFlip);
 
         for (int i = 0; i < 8; ++i) {
-            if ((priority || (framebuffer[(160*144)-line*160+xCoord+i] == util::Color(255, 255, 255))) && !(decodedTile[line-yCoord][i] == util::Color(255, 255, 255))) {
-                framebuffer[(160*144)-line*160+xCoord+i] = decodedTile[line-yCoord][i];
+            if ((priority || (framebuffer[line*160+xCoord+i] == util::Color(255, 255, 255))) && !(decodedTile[line-yCoord][i] == util::Color(255, 255, 255))) {
+                framebuffer[line*160+xCoord+i] = decodedTile[line-yCoord][i];
             }
         }
     }

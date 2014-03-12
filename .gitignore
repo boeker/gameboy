@@ -3,5 +3,8 @@ ui_*
 moc_*
 *.o
 *.swp
-/Makefile
+/Makefile*
 /gameboy
+/object_script*
+/release
+/debug
