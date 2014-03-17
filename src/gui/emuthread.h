@@ -15,8 +15,10 @@ class EmuThread : public QThread {
     Q_OBJECT
 
  public:
-    EmuThread(gameboy::Core *, ScreenWidget *, QObject *);
+    EmuThread(gameboy::Core *, ScreenWidget *);
     void run();
+
+    volatile bool stopped;
 
  private:
     gameboy::Core *gbCore;

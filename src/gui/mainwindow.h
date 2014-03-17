@@ -26,6 +26,8 @@ class MainWindow : public QMainWindow {
     void setScaling(int scaling);
 
  public slots:
+    void continueEmulation();
+    void pauseEmulation();
     void loadROM();
     void scale1x();
     void scale2x();

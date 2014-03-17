@@ -31,21 +31,41 @@ MainWindow::MainWindow(QWidget *parent) :
 
     setScaling(4);
 
-    emuThread = new EmuThread(gameboyCore, screenWidget, 0);
+    emuThread = new EmuThread(gameboyCore, screenWidget);
     screenWidget->doneCurrent();
     screenWidget->context()->moveToThread(emuThread);
 }
 
 MainWindow::~MainWindow() {
+    pauseEmulation();
+    delete emuThread;
+    delete gameboyCore;
+
     delete ui;
+}
+
+void MainWindow::continueEmulation() {
+    if (!emuThread->isRunning()) {
+        emuThread->stopped = false;
+        emuThread->start();
+    }
+}
+
+void MainWindow::pauseEmulation() {
+    if (emuThread->isRunning()) {
+        emuThread->stopped = true;
+        emuThread->wait();
+    }
 }
 
 void MainWindow::loadROM() {
     QString fileName = QFileDialog::getOpenFileName(this, "Open ROM", "", "Gameboy ROMs (*.gb)");
     if (!fileName.isNull()) {
+        pauseEmulation();
+
         gameboyCore->reset();
         gameboyCore->loadROM(fileName.toStdString());
-        emuThread->start();
+        continueEmulation();
     }
 }
 

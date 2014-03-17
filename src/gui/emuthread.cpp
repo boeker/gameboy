@@ -4,14 +4,15 @@
 #include "screenwidget.h"
 
 EmuThread::EmuThread(gameboy::Core *core,
-                    ScreenWidget *widget, QObject *parent) :
-    QThread(parent),
+                    ScreenWidget *widget) :
+    QThread(0),
+    stopped(false),
     gbCore(core),
     screenWidget(widget) {
 }
 
 void EmuThread::run() {
-    while (true) {
+    while (!stopped) {
         gbCore->emulateUntilVBlank();
 
         if (screenWidget->resizeNeeded) {
