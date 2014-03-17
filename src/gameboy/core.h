@@ -140,6 +140,8 @@ class Core {
     void LDHLnn();
     void LDSPnn();
     void LDnnSP();
+    void LDHLSPn();
+    void LDSPHL();
     void ADDrA();
     void ADDrB();
     void ADDrC();

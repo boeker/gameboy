@@ -111,35 +111,34 @@ void Core::opcdump() {
 }
 
 void Core::regdump() {
-    //log("AF: ");
-    //log(registers->getAF());
-    //log("A: ");
-    //log(registers->getA());
-    //log(", ");
-    //log("BC: ");
-    //log(registers->getBC());
-    //log(", ");
-    //log("DE: ");
-    //log(registers->getDE());
-    //log(", ");
-    //log("HL: ");
-    //log(registers->getHL());
-    //log(", ");
-    //log("SP: ");
-    //log(registers->getSP());
-    //log(", ");
-    //log("Z: ");
-    //log(registers->getZeroFlag() ? "true" : "false");
-    //log(", ");
-    //log("N: ");
-    //log(registers->getSubFlag() ? "true" : "false");
-    //log(", ");
-    //log("H: ");
-    //log(registers->getHalfCarryFlag() ? "true" : "false");
-    //log(", ");
-    //log("C: ");
-    //log(registers->getCarryFlag() ? "true" : "false");
-    //log("\n");
+    qDebug() << "AF: ";
+    qDebug() << registers->getAF();
+    qDebug() << "A: ";
+    qDebug() << registers->getA();
+    qDebug() << ", ";
+    qDebug() << "BC: ";
+    qDebug() << registers->getBC();
+    qDebug() << ", ";
+    qDebug() << "DE: ";
+    qDebug() << registers->getDE();
+    qDebug() << ", ";
+    qDebug() << "HL: ";
+    qDebug() << registers->getHL();
+    qDebug() << ", ";
+    qDebug() << "SP: ";
+    qDebug() << registers->getSP();
+    qDebug() << ", ";
+    qDebug() << "Z: ";
+    qDebug() << (registers->getZeroFlag() ? "true" : "false");
+    qDebug() << ", ";
+    qDebug() << "N: ";
+    qDebug() << (registers->getSubFlag() ? "true" : "false");
+    qDebug() << ", ";
+    qDebug() << "H: ";
+    qDebug() << (registers->getHalfCarryFlag() ? "true" : "false");
+    qDebug() << ", ";
+    qDebug() << "C: ";
+    qDebug() << (registers->getCarryFlag() ? "true" : "false");
 }
 
 void Core::sysdump() {

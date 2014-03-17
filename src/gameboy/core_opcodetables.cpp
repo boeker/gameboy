@@ -8,7 +8,7 @@ const Core::opCode Core::opCodes[] = {
     &Core::LDnnSP,   &Core::ADDHLBC,  &Core::LDABCM,   &Core::DECBC,
     &Core::INCrC,    &Core::DECrC,    &Core::LDrnC,    &Core::RRCA,
     //10
-    &Core::xx,       &Core::LDDEnn,   &Core::LDDEMA,   &Core::INCDE,
+    &Core::STOP,     &Core::LDDEnn,   &Core::LDDEMA,   &Core::INCDE,
     &Core::INCrD,    &Core::DECrD,    &Core::LDrnD,    &Core::xx,
     &Core::JRn,      &Core::ADDHLDE,  &Core::LDADEM,   &Core::DECDE,
     &Core::INCrE,    &Core::DECrE,    &Core::LDrnE,    &Core::RRANCB,
@@ -80,7 +80,7 @@ const Core::opCode Core::opCodes[] = {
     //F0
     &Core::LDAIOn,   &Core::POPAF,    &Core::LDAIOC,   &Core::DI,
     &Core::xx,       &Core::PUSHAF,   &Core::ORn,      &Core::RST30,
-    &Core::xx,       &Core::xx,       &Core::LDAmm,    &Core::EI,
+    &Core::LDHLSPn,  &Core::LDSPHL,   &Core::LDAmm,    &Core::EI,
     &Core::xx,       &Core::xx,       &Core::CPn,      &Core::RST38,
 };
 

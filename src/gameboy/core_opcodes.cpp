@@ -130,6 +130,12 @@ void Core::LDSPnn() { registers->setSP(memory->readW(registers->pc)); registers-
 //(nn) = SP
 void Core::LDnnSP() { memory->writeW(memory->readW(registers->pc), registers->getSP()); registers->pc += 2; lastClocks = 5; }
 
+//HL = SP+n
+void Core::LDHLSPn() { int8_t val = memory->read(registers->pc++); registers->setHL(registers->getSP() + val); lastClocks = 3; }
+
+//SP = HL
+void Core::LDSPHL() { registers->setSP(registers->getHL()); lastClocks = 2; }
+
 //----------8-Bit ALU----------//
 void Core::ADDrA() { uint8_t n = registers->getA(); uint8_t a = registers->getA(); registers->setA(a + n); registers->setZeroFlag(registers->getA() == 0); registers->setSubFlag(false); registers->setHalfCarryFlag((((a & 0xF) + (n & 0xF)) & 0x10) != 0); registers->setCarryFlag((a + n) > 255); lastClocks = 1; }
 void Core::ADDrB() { uint8_t n = registers->getB(); uint8_t a = registers->getA(); registers->setA(a + n); registers->setZeroFlag(registers->getA() == 0); registers->setSubFlag(false); registers->setHalfCarryFlag((((a & 0xF) + (n & 0xF)) & 0x10) != 0); registers->setCarryFlag((a + n) > 255); lastClocks = 1; }
@@ -179,7 +185,7 @@ void Core::ANDrE() { uint8_t n = registers->getE(); registers->setA(n & register
 void Core::ANDrH() { uint8_t n = registers->getH(); registers->setA(n & registers->getA()); registers->setZeroFlag(registers->getA() == 0); registers->setSubFlag(false); registers->setHalfCarryFlag(true); registers->setCarryFlag(false); lastClocks = 1; }
 void Core::ANDrL() { uint8_t n = registers->getL(); registers->setA(n & registers->getA()); registers->setZeroFlag(registers->getA() == 0); registers->setSubFlag(false); registers->setHalfCarryFlag(true); registers->setCarryFlag(false); lastClocks = 1; }
 void Core::ANDHLM() { uint8_t n = memory->read(registers->getHL()); registers->setA(n & registers->getA()); registers->setZeroFlag(registers->getA() == 0); registers->setSubFlag(false); registers->setHalfCarryFlag(true); registers->setCarryFlag(false); lastClocks = 2; }
-void Core::ANDn() { uint8_t n = memory->read(registers->pc); ++registers->pc; registers->setA(n & registers->getA()); registers->setZeroFlag(registers->getA() == 0); registers->setSubFlag(false); registers->setHalfCarryFlag(true); registers->setCarryFlag(false); lastClocks = 2; }
+void Core::ANDn() { uint8_t n = memory->read(registers->pc++); registers->setA(n & registers->getA()); registers->setZeroFlag(registers->getA() == 0); registers->setSubFlag(false); registers->setHalfCarryFlag(true); registers->setCarryFlag(false); lastClocks = 2; }
 
 void Core::ORrA() { uint8_t n = registers->getA(); registers->setA(n | registers->getA()); registers->setZeroFlag(registers->getA() == 0); registers->setSubFlag(false); registers->setHalfCarryFlag(false); registers->setCarryFlag(false); lastClocks = 1; }
 void Core::ORrB() { uint8_t n = registers->getB(); registers->setA(n | registers->getA()); registers->setZeroFlag(registers->getA() == 0); registers->setSubFlag(false); registers->setHalfCarryFlag(false); registers->setCarryFlag(false); lastClocks = 1; }
@@ -310,7 +316,7 @@ void Core::DI() { registers->setIME(false); lastClocks = 1; }
 void Core::EI() { registers->setIME(true); lastClocks = 1; }
 
 void Core::STOP() {
-//TODO
+    // TODO
 }
 
 void Core::SCF() { registers->setSubFlag(false); registers->setHalfCarryFlag(false); registers->setCarryFlag(true); lastClocks = 1; }
