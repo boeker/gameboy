@@ -13,6 +13,12 @@ EmuThread::EmuThread(gameboy::Core *core,
 void EmuThread::run() {
     while (true) {
         gbCore->emulateUntilVBlank();
+
+        if (screenWidget->resizeNeeded) {
+            screenWidget->resizePub(screenWidget->newWidth, screenWidget->newHeight);
+            screenWidget->resizeNeeded = false;
+        }
+
         screenWidget->updateGL();
     }
 }

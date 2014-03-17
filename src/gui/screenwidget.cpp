@@ -1,8 +1,12 @@
 #include "screenwidget.h"
 
+#include <QResizeEvent>
 
 ScreenWidget::ScreenWidget(QWidget *parent) :
-    QGLWidget(parent) {
+    QGLWidget(parent),
+    resizeNeeded(false),
+    width(160),
+    height(144) {
 }
 
 void ScreenWidget::setFramebuffer(util::Color *fb) {
@@ -10,11 +14,17 @@ void ScreenWidget::setFramebuffer(util::Color *fb) {
 }
 
 void ScreenWidget::resizeEvent(QResizeEvent *event) {
+    newWidth = event->size().width();
+    newHeight = event->size().height();
+    resizeNeeded = true;
+}
+
+void ScreenWidget::paintEvent(QPaintEvent *) {
 	//do nothing
 }
 
-void ScreenWidget::paintEvent(QPaintEvent *event) {
-	//do nothing
+void ScreenWidget::resizePub(int w, int h) {
+    resizeGL(w, h);
 }
 
 void ScreenWidget::initializeGL() {
@@ -36,7 +46,8 @@ void ScreenWidget::resizeGL(int w, int h) {
     glMatrixMode(GL_MODELVIEW);
     glViewport(0, 0, w, h);
 
-    // TODO - save size for use in paintGL()
+    width = w;
+    height = h;
 }
 
 void ScreenWidget::paintGL() {
@@ -48,10 +59,10 @@ void ScreenWidget::paintGL() {
         glTexCoord2d(0.0, 0.0);
         glVertex2d(0.0, 0.0);
         glTexCoord2d(1.0, 0.0);
-        glVertex2d(160.0, 0.0); // TODO - display_width!
+        glVertex2d(width, 0.0);
         glTexCoord2d(1.0, 1.0);
-        glVertex2d(160.0, 144.0); // TODO - display_width, display_height!
+        glVertex2d(width, height);
         glTexCoord2d(0.0, 1.0);
-        glVertex2d(0.0, 144.0); // TODO - display_height!
+        glVertex2d(0.0, height);
     glEnd();
 }

@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 
+#include <QActionGroup>
 #include <QKeyEvent>
 #include "ui_mainwindow.h"
 #include "screenwidget.h"
@@ -8,16 +9,24 @@
 #include "gameboy/keyboard.h"
 
 MainWindow::MainWindow(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::MainWindow) {
+    QMainWindow(parent),
+    ui(new Ui::MainWindow),
+    videoScalingGroup(new QActionGroup(this)) {
     ui->setupUi(this);
+
+    videoScalingGroup->addAction(ui->action1x);
+    videoScalingGroup->addAction(ui->action2x);
+    videoScalingGroup->addAction(ui->action4x);
+    videoScalingGroup->addAction(ui->action6x);
 
     gameboyCore = new gameboy::Core("tetris.gb");
     keyboard = gameboyCore->getKeyboard();
 
     screenWidget = new ScreenWidget(this);
     screenWidget->setFramebuffer(gameboyCore->getFramebuffer());
-    ui->verticalLayout->addWidget(screenWidget);
+    setCentralWidget(screenWidget);
+
+    setScaling(4);
 
     emuThread = new EmuThread(gameboyCore, screenWidget, 0);
     screenWidget->doneCurrent();
@@ -27,6 +36,31 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow() {
     delete ui;
+}
+
+void MainWindow::loadROM() {
+    
+}
+
+void MainWindow::setScaling(int scaling) {
+    screenWidget->resize(160*scaling, 144*scaling);
+    resize(160*scaling, 144*scaling + ui->menubar->height());
+}
+
+void MainWindow::scale1x() {
+    setScaling(1);
+}
+
+void MainWindow::scale2x() {
+    setScaling(2);
+}
+
+void MainWindow::scale4x() {
+    setScaling(4);
+}
+
+void MainWindow::scale6x() {
+    setScaling(6);
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event) {
