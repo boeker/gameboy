@@ -1,7 +1,9 @@
 #include "mainwindow.h"
 
 #include <QActionGroup>
+#include <QFileDialog>
 #include <QKeyEvent>
+#include <QString>
 #include "ui_mainwindow.h"
 #include "screenwidget.h"
 #include "emuthread.h"
@@ -19,7 +21,8 @@ MainWindow::MainWindow(QWidget *parent) :
     videoScalingGroup->addAction(ui->action4x);
     videoScalingGroup->addAction(ui->action6x);
 
-    gameboyCore = new gameboy::Core("tetris.gb");
+    gameboyCore = new gameboy::Core;
+
     keyboard = gameboyCore->getKeyboard();
 
     screenWidget = new ScreenWidget(this);
@@ -31,7 +34,6 @@ MainWindow::MainWindow(QWidget *parent) :
     emuThread = new EmuThread(gameboyCore, screenWidget, 0);
     screenWidget->doneCurrent();
     screenWidget->context()->moveToThread(emuThread);
-    emuThread->start();
 }
 
 MainWindow::~MainWindow() {
@@ -39,7 +41,12 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::loadROM() {
-    
+    QString fileName = QFileDialog::getOpenFileName(this, "Open ROM", "", "Gameboy ROMs (*.gb)");
+    if (!fileName.isNull()) {
+        gameboyCore->reset();
+        gameboyCore->loadROM(fileName.toStdString());
+        emuThread->start();
+    }
 }
 
 void MainWindow::setScaling(int scaling) {

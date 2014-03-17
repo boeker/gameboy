@@ -1,9 +1,18 @@
 #include "cpuregisters.h"
 
 namespace gameboy {
-CPURegisters::CPURegisters() :
-    interruptMasterEnable(false) {
+CPURegisters::CPURegisters() {
     registers = new uint8_t[8];
+    reset();
+}
+
+CPURegisters::~CPURegisters() {
+    delete[] registers;
+}
+
+void CPURegisters::reset() {
+    interruptMasterEnable = false;
+
     setAF(0x01B0);
     setBC(0x0013);
     setDE(0x00D8);
@@ -11,10 +20,6 @@ CPURegisters::CPURegisters() :
     setSP(0xFFFE);
 
     pc = 0x0100;
-}
-
-CPURegisters::~CPURegisters() {
-    delete[] registers;
 }
 
 void CPURegisters::setA(uint8_t value) {

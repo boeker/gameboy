@@ -10,6 +10,7 @@ class Screen {
  public:
     explicit Screen(Memory *memory);
     virtual ~Screen();
+    void reset();
 
     util::Color* getFramebuffer();
     bool drawFlagSet();

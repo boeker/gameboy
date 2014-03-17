@@ -6,8 +6,7 @@
 #include <fstream>
 
 namespace gameboy {
-Memory::Memory(const std::string &file) :
-    selectedAddBank(0) {
+Memory::Memory() {
     ieReg = new uint8_t;
     highRam = new uint8_t[127];
     ioPorts = new uint8_t[224];
@@ -17,6 +16,32 @@ Memory::Memory(const std::string &file) :
     videoRam = new uint8_t[8192];
     romBank0 = new uint8_t[16384];
 
+    reset();
+
+    numOfAddBanks = -1;
+}
+
+Memory::~Memory() {
+    delete ieReg;
+    delete[] highRam;
+    delete[] ioPorts;
+    delete[] spriteAttTab;
+    delete[] internalRam;
+    delete[] externalRam;
+    delete[] videoRam;
+    delete[] romBank0;
+    if (numOfAddBanks != -1) {
+        for (int i = 0; i < numOfAddBanks; ++i) {
+            delete[] romBanks[i];
+        }
+        numOfAddBanks = -1;
+    }
+    delete[] romBanks;
+}
+
+void Memory::reset() {
+    selectedAddBank = 0;
+
     memset(ieReg, 0, 1);  // Yeah, I know...
     memset(highRam, 0, 127);
     memset(ioPorts, 0, 224);
@@ -25,33 +50,6 @@ Memory::Memory(const std::string &file) :
     memset(externalRam, 0, 8192);
     memset(videoRam, 0, 8192);
     memset(romBank0, 0, 16384);
-
-
-    std::ifstream cartridge(file.c_str(), std::ios::binary);
-    if (!cartridge.good()) {
-        exit(1);
-    }
-    cartridge.read(reinterpret_cast<char*>(romBank0), 16384);
-    int romSize = romBank0[0x0148];
-    switch (romSize) {
-        case 0x52:
-            numOfAddBanks = 72-1;
-        break;
-        case 0x53:
-            numOfAddBanks = 80-1;
-        break;
-        case 0x54:
-            numOfAddBanks = 96-1;
-        break;
-        default:
-            numOfAddBanks = pow(2, romSize+1)-1;
-        break;
-    }
-    romBanks = new uint8_t*[numOfAddBanks];
-    for (int i = 0; i < numOfAddBanks; ++i) {
-        romBanks[i] = new uint8_t[16384];
-        cartridge.read(reinterpret_cast<char*>(romBanks[i]), 16384);
-    }
 
     write(0xFF05, 0x00);
     write(0xFF06, 0x00);
@@ -84,21 +82,41 @@ Memory::Memory(const std::string &file) :
     write(0xFF4A, 0x00);
     write(0xFF4B, 0x00);
     write(0xFFFF, 0x00);
+
+    if (numOfAddBanks != -1) {
+        for (int i = 0; i < numOfAddBanks; ++i) {
+            delete[] romBanks[i];
+        }
+        numOfAddBanks = -1;
+    }
 }
 
-Memory::~Memory() {
-    delete ieReg;
-    delete[] highRam;
-    delete[] ioPorts;
-    delete[] spriteAttTab;
-    delete[] internalRam;
-    delete[] externalRam;
-    delete[] videoRam;
-    delete[] romBank0;
-    for (int i = 0; i < numOfAddBanks; ++i) {
-        delete[] romBanks[i];
+void Memory::loadROM(const std::string &file) {
+    std::ifstream cartridge(file.c_str(), std::ios::binary);
+    if (!cartridge.good()) {
+        exit(1);
     }
-    delete[] romBanks;
+    cartridge.read(reinterpret_cast<char*>(romBank0), 16384);
+    int romSize = romBank0[0x0148];
+    switch (romSize) {
+        case 0x52:
+            numOfAddBanks = 72-1;
+        break;
+        case 0x53:
+            numOfAddBanks = 80-1;
+        break;
+        case 0x54:
+            numOfAddBanks = 96-1;
+        break;
+        default:
+            numOfAddBanks = pow(2, romSize+1)-1;
+        break;
+    }
+    romBanks = new uint8_t*[numOfAddBanks];
+    for (int i = 0; i < numOfAddBanks; ++i) {
+        romBanks[i] = new uint8_t[16384];
+        cartridge.read(reinterpret_cast<char*>(romBanks[i]), 16384);
+    }
 }
 
 uint8_t Memory::read(uint16_t address) {

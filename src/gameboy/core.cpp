@@ -11,11 +11,11 @@
 #include "screen.h"
 
 namespace gameboy {
-Core::Core(const std::string &file) :
+Core::Core() :
     registers(new CPURegisters),
-    memory(new Memory(file)),
+    memory(new Memory),
     screen(new Screen(memory)),
-    keyboard(new Keyboard()),
+    keyboard(new Keyboard),
     lastClocks(0),
     clock(0) {
 }
@@ -25,6 +25,18 @@ Core::~Core() {
     delete screen;
     delete memory;
     delete registers;
+}
+
+void Core::loadROM(const std::string &file) {
+    memory->loadROM(file);
+}
+
+void Core::reset() {
+    registers->reset();
+    memory->reset();
+    screen->reset();
+    lastClocks = 0;
+    clock = 0;
 }
 
 Keyboard* Core::getKeyboard() {

@@ -35,8 +35,10 @@ Echo of 8kB Internal RAM
 namespace gameboy {
 class Memory {
  public:
-    explicit Memory(const std::string &);
+    explicit Memory();
     virtual ~Memory();
+    void reset();
+    void loadROM(const std::string &file);
 
     uint8_t read(uint16_t address);
     void write(uint16_t address, uint8_t value);

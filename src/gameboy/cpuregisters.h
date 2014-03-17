@@ -8,6 +8,7 @@ class CPURegisters {
  public:
     CPURegisters();
     virtual ~CPURegisters();
+    void reset();
 
     void setA(uint8_t value);
     void setB(uint8_t value);

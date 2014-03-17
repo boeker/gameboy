@@ -18,8 +18,10 @@ class Screen;
 namespace gameboy {
 class Core {
  public:
-    explicit Core(const std::string &);
+    explicit Core();
     virtual ~Core();
+    void loadROM(const std::string &file);
+    void reset();
 
     Keyboard* getKeyboard();
     util::Color* getFramebuffer();

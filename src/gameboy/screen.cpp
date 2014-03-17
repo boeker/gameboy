@@ -6,11 +6,7 @@
 #include <fstream>
 
 namespace gameboy {
-Screen::Screen(Memory *memory)
-    :drawFlag(false),
-    line(0),
-    clocks(0),
-    mode(OAM),
+Screen::Screen(Memory *memory) :
     memory(memory) {
     framebuffer = new util::Color[160 * 144];
     mapFrameBuffer = new util::Color*[256];
@@ -21,6 +17,8 @@ Screen::Screen(Memory *memory)
     for (int i = 0; i < 8; ++i) {
         decodedTile[i] = new util::Color[8];
     }
+
+    reset();
 }
 
 Screen::~Screen() {
@@ -33,6 +31,26 @@ Screen::~Screen() {
         delete[] decodedTile[i];
     }
     delete[] decodedTile;
+}
+
+void Screen::reset() {
+    drawFlag = false;
+    line = 0;
+    mode = OAM;
+
+    for (int i = 0; i < 160*144; ++i) {
+        framebuffer[i].set(0xFF, 0xFF, 0xFF);
+    }
+    for (int i = 0; i < 256; ++i) {
+        for (int h = 0; h < 256; ++h) {
+            mapFrameBuffer[i][h].set(0xFF, 0xFF, 0xFF);
+        }
+    }
+    for (int i = 0; i < 8; ++i) {
+        for (int h = 0; h < 8; ++h) {
+            decodedTile[i][h].set(0xFF, 0xFF, 0xFF);
+        }
+    }
 }
 
 util::Color* Screen::getFramebuffer() {
