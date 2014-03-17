@@ -300,17 +300,21 @@ void Core::POPDE() { registers->setDE(memory->readW(registers->getSP())); regist
 void Core::POPHL() { registers->setHL(memory->readW(registers->getSP())); registers->setSP(registers->getSP()+2); lastClocks = 3; }
 
 //----------RESTARTS----------//
-void Core::RST00() { registers->setSP(registers->getSP()-2); memory->writeW(registers->getSP(), registers->pc); registers->pc = 0x00; lastClocks = 4; }
-void Core::RST08() { registers->setSP(registers->getSP()-2); memory->writeW(registers->getSP(), registers->pc); registers->pc = 0x08; lastClocks = 4; }
-void Core::RST10() { registers->setSP(registers->getSP()-2); memory->writeW(registers->getSP(), registers->pc); registers->pc = 0x10; lastClocks = 4; }
-void Core::RST18() { registers->setSP(registers->getSP()-2); memory->writeW(registers->getSP(), registers->pc); registers->pc = 0x18; lastClocks = 4; }
-void Core::RST20() { registers->setSP(registers->getSP()-2); memory->writeW(registers->getSP(), registers->pc); registers->pc = 0x20; lastClocks = 4; }
-void Core::RST28() { registers->setSP(registers->getSP()-2); memory->writeW(registers->getSP(), registers->pc); registers->pc = 0x28; lastClocks = 4; }
-void Core::RST30() { registers->setSP(registers->getSP()-2); memory->writeW(registers->getSP(), registers->pc); registers->pc = 0x30; lastClocks = 4; }
-void Core::RST38() { registers->setSP(registers->getSP()-2); memory->writeW(registers->getSP(), registers->pc); registers->pc = 0x38; lastClocks = 4; }
+void Core::RST00() { registers->setSP(registers->getSP()-2); memory->writeW(registers->getSP(), registers->pc); registers->pc = 0x0000; lastClocks = 4; }
+void Core::RST08() { registers->setSP(registers->getSP()-2); memory->writeW(registers->getSP(), registers->pc); registers->pc = 0x0008; lastClocks = 4; }
+void Core::RST10() { registers->setSP(registers->getSP()-2); memory->writeW(registers->getSP(), registers->pc); registers->pc = 0x0010; lastClocks = 4; }
+void Core::RST18() { registers->setSP(registers->getSP()-2); memory->writeW(registers->getSP(), registers->pc); registers->pc = 0x0018; lastClocks = 4; }
+void Core::RST20() { registers->setSP(registers->getSP()-2); memory->writeW(registers->getSP(), registers->pc); registers->pc = 0x0020; lastClocks = 4; }
+void Core::RST28() { registers->setSP(registers->getSP()-2); memory->writeW(registers->getSP(), registers->pc); registers->pc = 0x0028; lastClocks = 4; }
+void Core::RST30() { registers->setSP(registers->getSP()-2); memory->writeW(registers->getSP(), registers->pc); registers->pc = 0x0030; lastClocks = 4; }
+void Core::RST38() { registers->setSP(registers->getSP()-2); memory->writeW(registers->getSP(), registers->pc); registers->pc = 0x0038; lastClocks = 4; }
 
 //---------INTERRUPTS---------//
 void Core::INT40() { registers->setIME(false); registers->setSP(registers->getSP()-2); memory->writeW(registers->getSP(), registers->pc); registers->pc = 0x0040; lastClocks = 3; }
+void Core::INT48() { registers->setIME(false); registers->setSP(registers->getSP()-2); memory->writeW(registers->getSP(), registers->pc); registers->pc = 0x0048; lastClocks = 3; }
+void Core::INT50() { registers->setIME(false); registers->setSP(registers->getSP()-2); memory->writeW(registers->getSP(), registers->pc); registers->pc = 0x0050; lastClocks = 3; }
+void Core::INT58() { registers->setIME(false); registers->setSP(registers->getSP()-2); memory->writeW(registers->getSP(), registers->pc); registers->pc = 0x0058; lastClocks = 3; }
+void Core::INT60() { registers->setIME(false); registers->setSP(registers->getSP()-2); memory->writeW(registers->getSP(), registers->pc); registers->pc = 0x0060; lastClocks = 3; }
 
 //----------MISC----------//
 void Core::NOP() { lastClocks = 1; }
@@ -489,6 +493,60 @@ void Core::RES0H() { registers->setH(registers->getH() & 0xFE); lastClocks = 2; 
 void Core::RES0L() { registers->setL(registers->getL() & 0xFE); lastClocks = 2; }
 void Core::RES0HL() { memory->write(registers->getHL(), memory->read(registers->getHL()) & 0xFE); lastClocks = 4; }
 
+void Core::RES1A() { registers->setA(registers->getA() & 0xFD); lastClocks = 2; }
+void Core::RES1B() { registers->setB(registers->getB() & 0xFD); lastClocks = 2; }
+void Core::RES1C() { registers->setC(registers->getC() & 0xFD); lastClocks = 2; }
+void Core::RES1D() { registers->setD(registers->getD() & 0xFD); lastClocks = 2; }
+void Core::RES1E() { registers->setE(registers->getE() & 0xFD); lastClocks = 2; }
+void Core::RES1H() { registers->setH(registers->getH() & 0xFD); lastClocks = 2; }
+void Core::RES1L() { registers->setL(registers->getL() & 0xFD); lastClocks = 2; }
+void Core::RES1HL() { memory->write(registers->getHL(), memory->read(registers->getHL()) & 0xFD); lastClocks = 4; }
+
+void Core::RES2A() { registers->setA(registers->getA() & 0xFB); lastClocks = 2; }
+void Core::RES2B() { registers->setB(registers->getB() & 0xFB); lastClocks = 2; }
+void Core::RES2C() { registers->setC(registers->getC() & 0xFB); lastClocks = 2; }
+void Core::RES2D() { registers->setD(registers->getD() & 0xFB); lastClocks = 2; }
+void Core::RES2E() { registers->setE(registers->getE() & 0xFB); lastClocks = 2; }
+void Core::RES2H() { registers->setH(registers->getH() & 0xFB); lastClocks = 2; }
+void Core::RES2L() { registers->setL(registers->getL() & 0xFB); lastClocks = 2; }
+void Core::RES2HL() { memory->write(registers->getHL(), memory->read(registers->getHL()) & 0xFB); lastClocks = 4; }
+
+void Core::RES3A() { registers->setA(registers->getA() & 0xF7); lastClocks = 2; }
+void Core::RES3B() { registers->setB(registers->getB() & 0xF7); lastClocks = 2; }
+void Core::RES3C() { registers->setC(registers->getC() & 0xF7); lastClocks = 2; }
+void Core::RES3D() { registers->setD(registers->getD() & 0xF7); lastClocks = 2; }
+void Core::RES3E() { registers->setE(registers->getE() & 0xF7); lastClocks = 2; }
+void Core::RES3H() { registers->setH(registers->getH() & 0xF7); lastClocks = 2; }
+void Core::RES3L() { registers->setL(registers->getL() & 0xF7); lastClocks = 2; }
+void Core::RES3HL() { memory->write(registers->getHL(), memory->read(registers->getHL()) & 0xF7); lastClocks = 4; }
+
+void Core::RES4A() { registers->setA(registers->getA() & 0xEF); lastClocks = 2; }
+void Core::RES4B() { registers->setB(registers->getB() & 0xEF); lastClocks = 2; }
+void Core::RES4C() { registers->setC(registers->getC() & 0xEF); lastClocks = 2; }
+void Core::RES4D() { registers->setD(registers->getD() & 0xEF); lastClocks = 2; }
+void Core::RES4E() { registers->setE(registers->getE() & 0xEF); lastClocks = 2; }
+void Core::RES4H() { registers->setH(registers->getH() & 0xEF); lastClocks = 2; }
+void Core::RES4L() { registers->setL(registers->getL() & 0xEF); lastClocks = 2; }
+void Core::RES4HL() { memory->write(registers->getHL(), memory->read(registers->getHL()) & 0xEF); lastClocks = 4; }
+
+void Core::RES5A() { registers->setA(registers->getA() & 0xDF); lastClocks = 2; }
+void Core::RES5B() { registers->setB(registers->getB() & 0xDF); lastClocks = 2; }
+void Core::RES5C() { registers->setC(registers->getC() & 0xDF); lastClocks = 2; }
+void Core::RES5D() { registers->setD(registers->getD() & 0xDF); lastClocks = 2; }
+void Core::RES5E() { registers->setE(registers->getE() & 0xDF); lastClocks = 2; }
+void Core::RES5H() { registers->setH(registers->getH() & 0xDF); lastClocks = 2; }
+void Core::RES5L() { registers->setL(registers->getL() & 0xDF); lastClocks = 2; }
+void Core::RES5HL() { memory->write(registers->getHL(), memory->read(registers->getHL()) & 0xDF); lastClocks = 4; }
+
+void Core::RES6A() { registers->setA(registers->getA() & 0xBF); lastClocks = 2; }
+void Core::RES6B() { registers->setB(registers->getB() & 0xBF); lastClocks = 2; }
+void Core::RES6C() { registers->setC(registers->getC() & 0xBF); lastClocks = 2; }
+void Core::RES6D() { registers->setD(registers->getD() & 0xBF); lastClocks = 2; }
+void Core::RES6E() { registers->setE(registers->getE() & 0xBF); lastClocks = 2; }
+void Core::RES6H() { registers->setH(registers->getH() & 0xBF); lastClocks = 2; }
+void Core::RES6L() { registers->setL(registers->getL() & 0xBF); lastClocks = 2; }
+void Core::RES6HL() { memory->write(registers->getHL(), memory->read(registers->getHL()) & 0xBF); lastClocks = 4; }
+
 void Core::RES7A() { registers->setA(registers->getA() & 0x7F); lastClocks = 2; }
 void Core::RES7B() { registers->setB(registers->getB() & 0x7F); lastClocks = 2; }
 void Core::RES7C() { registers->setC(registers->getC() & 0x7F); lastClocks = 2; }
@@ -497,6 +555,69 @@ void Core::RES7E() { registers->setE(registers->getE() & 0x7F); lastClocks = 2; 
 void Core::RES7H() { registers->setH(registers->getH() & 0x7F); lastClocks = 2; }
 void Core::RES7L() { registers->setL(registers->getL() & 0x7F); lastClocks = 2; }
 void Core::RES7HL() { memory->write(registers->getHL(), memory->read(registers->getHL()) & 0x7F); lastClocks = 4; }
+
+void Core::SET0A() { registers->setA(registers->getA() | 0x01); lastClocks = 2; }
+void Core::SET0B() { registers->setB(registers->getB() | 0x01); lastClocks = 2; }
+void Core::SET0C() { registers->setC(registers->getC() | 0x01); lastClocks = 2; }
+void Core::SET0D() { registers->setD(registers->getD() | 0x01); lastClocks = 2; }
+void Core::SET0E() { registers->setE(registers->getE() | 0x01); lastClocks = 2; }
+void Core::SET0H() { registers->setH(registers->getH() | 0x01); lastClocks = 2; }
+void Core::SET0L() { registers->setL(registers->getL() | 0x01); lastClocks = 2; }
+void Core::SET0HL() { memory->write(registers->getHL(), memory->read(registers->getHL()) | 0x01); lastClocks = 4; }
+
+void Core::SET1A() { registers->setA(registers->getA() | 0x02); lastClocks = 2; }
+void Core::SET1B() { registers->setB(registers->getB() | 0x02); lastClocks = 2; }
+void Core::SET1C() { registers->setC(registers->getC() | 0x02); lastClocks = 2; }
+void Core::SET1D() { registers->setD(registers->getD() | 0x02); lastClocks = 2; }
+void Core::SET1E() { registers->setE(registers->getE() | 0x02); lastClocks = 2; }
+void Core::SET1H() { registers->setH(registers->getH() | 0x02); lastClocks = 2; }
+void Core::SET1L() { registers->setL(registers->getL() | 0x02); lastClocks = 2; }
+void Core::SET1HL() { memory->write(registers->getHL(), memory->read(registers->getHL()) | 0x02); lastClocks = 4; }
+
+void Core::SET2A() { registers->setA(registers->getA() | 0x04); lastClocks = 2; }
+void Core::SET2B() { registers->setB(registers->getB() | 0x04); lastClocks = 2; }
+void Core::SET2C() { registers->setC(registers->getC() | 0x04); lastClocks = 2; }
+void Core::SET2D() { registers->setD(registers->getD() | 0x04); lastClocks = 2; }
+void Core::SET2E() { registers->setE(registers->getE() | 0x04); lastClocks = 2; }
+void Core::SET2H() { registers->setH(registers->getH() | 0x04); lastClocks = 2; }
+void Core::SET2L() { registers->setL(registers->getL() | 0x04); lastClocks = 2; }
+void Core::SET2HL() { memory->write(registers->getHL(), memory->read(registers->getHL()) | 0x04); lastClocks = 4; }
+
+void Core::SET3A() { registers->setA(registers->getA() | 0x08); lastClocks = 2; }
+void Core::SET3B() { registers->setB(registers->getB() | 0x08); lastClocks = 2; }
+void Core::SET3C() { registers->setC(registers->getC() | 0x08); lastClocks = 2; }
+void Core::SET3D() { registers->setD(registers->getD() | 0x08); lastClocks = 2; }
+void Core::SET3E() { registers->setE(registers->getE() | 0x08); lastClocks = 2; }
+void Core::SET3H() { registers->setH(registers->getH() | 0x08); lastClocks = 2; }
+void Core::SET3L() { registers->setL(registers->getL() | 0x08); lastClocks = 2; }
+void Core::SET3HL() { memory->write(registers->getHL(), memory->read(registers->getHL()) | 0x08); lastClocks = 4; }
+
+void Core::SET4A() { registers->setA(registers->getA() | 0x10); lastClocks = 2; }
+void Core::SET4B() { registers->setB(registers->getB() | 0x10); lastClocks = 2; }
+void Core::SET4C() { registers->setC(registers->getC() | 0x10); lastClocks = 2; }
+void Core::SET4D() { registers->setD(registers->getD() | 0x10); lastClocks = 2; }
+void Core::SET4E() { registers->setE(registers->getE() | 0x10); lastClocks = 2; }
+void Core::SET4H() { registers->setH(registers->getH() | 0x10); lastClocks = 2; }
+void Core::SET4L() { registers->setL(registers->getL() | 0x10); lastClocks = 2; }
+void Core::SET4HL() { memory->write(registers->getHL(), memory->read(registers->getHL()) | 0x10); lastClocks = 4; }
+
+void Core::SET5A() { registers->setA(registers->getA() | 0x20); lastClocks = 2; }
+void Core::SET5B() { registers->setB(registers->getB() | 0x20); lastClocks = 2; }
+void Core::SET5C() { registers->setC(registers->getC() | 0x20); lastClocks = 2; }
+void Core::SET5D() { registers->setD(registers->getD() | 0x20); lastClocks = 2; }
+void Core::SET5E() { registers->setE(registers->getE() | 0x20); lastClocks = 2; }
+void Core::SET5H() { registers->setH(registers->getH() | 0x20); lastClocks = 2; }
+void Core::SET5L() { registers->setL(registers->getL() | 0x20); lastClocks = 2; }
+void Core::SET5HL() { memory->write(registers->getHL(), memory->read(registers->getHL()) | 0x20); lastClocks = 4; }
+
+void Core::SET6A() { registers->setA(registers->getA() | 0x40); lastClocks = 2; }
+void Core::SET6B() { registers->setB(registers->getB() | 0x40); lastClocks = 2; }
+void Core::SET6C() { registers->setC(registers->getC() | 0x40); lastClocks = 2; }
+void Core::SET6D() { registers->setD(registers->getD() | 0x40); lastClocks = 2; }
+void Core::SET6E() { registers->setE(registers->getE() | 0x40); lastClocks = 2; }
+void Core::SET6H() { registers->setH(registers->getH() | 0x40); lastClocks = 2; }
+void Core::SET6L() { registers->setL(registers->getL() | 0x40); lastClocks = 2; }
+void Core::SET6HL() { memory->write(registers->getHL(), memory->read(registers->getHL()) | 0x40); lastClocks = 4; }
 
 void Core::SET7A() { registers->setA(registers->getA() | 0x80); lastClocks = 2; }
 void Core::SET7B() { registers->setB(registers->getB() | 0x80); lastClocks = 2; }
