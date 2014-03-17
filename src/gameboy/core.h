@@ -38,9 +38,10 @@ class Core {
     void xx();
     void CBxx();
 
- private:
     CPURegisters *registers;
     Memory *memory;
+
+ private:
     Screen *screen;
     Keyboard *keyboard;
 

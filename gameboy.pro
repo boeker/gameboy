@@ -7,6 +7,7 @@ CONFIG += c++11 console
 HEADERS += src/gui/mainwindow.h \
            src/gui/screenwidget.h \
            src/gui/emuthread.h \
+           src/gui/debuggerwindow.h \
            src/gameboy/core.h \
            src/gameboy/cpuregisters.h \
            src/gameboy/keyboard.h \
@@ -17,6 +18,7 @@ SOURCES += src/main.cpp \
            src/gui/mainwindow.cpp \
            src/gui/screenwidget.cpp \
            src/gui/emuthread.cpp \
+           src/gui/debuggerwindow.cpp \
            src/gameboy/core.cpp \
            src/gameboy/core_opcodes.cpp \
            src/gameboy/core_opcodetables.cpp \
@@ -25,4 +27,5 @@ SOURCES += src/main.cpp \
            src/gameboy/memory.cpp \
            src/gameboy/screen.cpp \
            src/util/color.cpp
-FORMS += src/gui/mainwindow.ui
+FORMS += src/gui/mainwindow.ui \
+         src/gui/debuggerwindow.ui

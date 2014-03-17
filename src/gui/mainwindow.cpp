@@ -6,6 +6,7 @@
 #include <QString>
 #include <QStringList>
 #include "ui_mainwindow.h"
+#include "debuggerwindow.h"
 #include "screenwidget.h"
 #include "emuthread.h"
 #include "gameboy/core.h"
@@ -36,6 +37,8 @@ MainWindow::MainWindow(QWidget *parent) :
     screenWidget->doneCurrent();
     screenWidget->context()->moveToThread(emuThread);
 
+    debuggerWindow = new DebuggerWindow(this, gameboyCore);
+
     QStringList args = QCoreApplication::arguments();
     if (args.size() > 1) {
         gameboyCore->loadROM(args.at(1).toStdString());
@@ -49,6 +52,15 @@ MainWindow::~MainWindow() {
     delete gameboyCore;
 
     delete ui;
+}
+
+void MainWindow::debugger() {
+    pauseEmulation();
+
+    if (!debuggerWindow->isVisible()) {
+        debuggerWindow->show();
+    }
+    debuggerWindow->refresh();   
 }
 
 void MainWindow::continueEmulation() {

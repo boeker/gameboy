@@ -62,6 +62,7 @@
     <property name="title">
      <string>Tools</string>
     </property>
+    <addaction name="actionDebugger"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuOptions"/>
@@ -129,6 +130,11 @@
   <action name="actionStop">
    <property name="text">
     <string>Stop</string>
+   </property>
+  </action>
+  <action name="actionDebugger">
+   <property name="text">
+    <string>Debugger</string>
    </property>
   </action>
  </widget>
@@ -246,6 +252,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionDebugger</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>debugger()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>174</x>
+     <y>166</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>scale1x()</slot>
@@ -255,5 +277,6 @@
   <slot>loadROM()</slot>
   <slot>continueEmulation()</slot>
   <slot>pauseEmulation()</slot>
+  <slot>debugger()</slot>
  </slots>
 </ui>

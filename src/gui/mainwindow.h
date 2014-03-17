@@ -4,6 +4,7 @@
 #include <QMainWindow>
 
 class QActionGroup;
+class DebuggerWindow;
 
 namespace Ui {
 class MainWindow;
@@ -26,6 +27,7 @@ class MainWindow : public QMainWindow {
     void setScaling(int scaling);
 
  public slots:
+    void debugger();
     void continueEmulation();
     void pauseEmulation();
     void loadROM();
@@ -47,6 +49,8 @@ class MainWindow : public QMainWindow {
     EmuThread *emuThread;
 
     QActionGroup *videoScalingGroup;
+
+    DebuggerWindow *debuggerWindow;
 };
 
 #endif
