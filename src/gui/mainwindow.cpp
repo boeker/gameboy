@@ -55,6 +55,8 @@ void MainWindow::continueEmulation() {
     if (!emuThread->isRunning()) {
         emuThread->stopped = false;
         emuThread->start();
+        ui->actionContinue->setEnabled(false);
+        ui->actionPause->setEnabled(true);
     }
 }
 
@@ -62,6 +64,8 @@ void MainWindow::pauseEmulation() {
     if (emuThread->isRunning()) {
         emuThread->stopped = true;
         emuThread->wait();
+        ui->actionContinue->setEnabled(true);
+        ui->actionPause->setEnabled(false);
     }
 }
 
