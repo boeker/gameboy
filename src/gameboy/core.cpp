@@ -44,6 +44,15 @@ void Core::emulateCycle() {
     clock += lastClocks;
     screen->step(lastClocks);
     updateKeyRegister();
+
+    uint8_t interrupt = memory->read(0xFF0F) & memory->read(0xFFFF);
+    if (registers->getIME() && interrupt) {
+        if (interrupt & 0x01) { // V-BLANK
+            memory->write(0xFF0F, memory->read(0xFF0F) & 0xFE); //Disable Flag
+            INT40();
+        }
+    }
+    clock += lastClocks;
 }
 
 void Core::emulateUntilVBlank() {

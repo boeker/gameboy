@@ -14,7 +14,7 @@ const Core::opCode Core::opCodes[] = {
     &Core::INCrE,    &Core::DECrE,    &Core::LDrnE,    &Core::RRANCB,
     //20
     &Core::JRNZn,    &Core::LDHLnn,   &Core::LDIHLA,   &Core::INCHL,
-    &Core::INCrH,    &Core::DECrH,    &Core::LDrnH,    &Core::xx,
+    &Core::INCrH,    &Core::DECrH,    &Core::LDrnH,    &Core::DAA,
     &Core::JRZn,     &Core::ADDHLHL,  &Core::LDIAHL,   &Core::DECHL,
     &Core::INCrL,    &Core::DECrL,    &Core::LDrnL,    &Core::CPL,
     //30
@@ -96,35 +96,35 @@ const Core::opCode Core::opCodesCB[] = {
     &Core::RRB,      &Core::RRC,      &Core::RRD,      &Core::RRE,
     &Core::RRH,      &Core::RRL,      &Core::RRHLM,    &Core::RRA,
     //CB20
-    &Core::CBxx,     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,
-    &Core::CBxx,     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,
+    &Core::SLAB,     &Core::SLAC,     &Core::SLAD,     &Core::SLAE,
+    &Core::SLAH,     &Core::SLAL,     &Core::SLAHL,    &Core::SLAA,
     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,
     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,
     //CB30
     &Core::SWAPrB,   &Core::SWAPrC,   &Core::SWAPrD,   &Core::SWAPrE,
     &Core::SWAPrH,   &Core::SWAPrL,   &Core::SWAPrHLm, &Core::SWAPrA,
     &Core::SRLB,     &Core::SRLC,     &Core::SRLD,     &Core::SRLE,
-    &Core::SRLH,     &Core::SRLL,     &Core::SRLHL,     &Core::SRLA,
+    &Core::SRLH,     &Core::SRLL,     &Core::SRLHL,    &Core::SRLA,
     //CB40
-    &Core::CBxx,     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,
-    &Core::CBxx,     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,
-    &Core::CBxx,     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,
-    &Core::CBxx,     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,
+    &Core::BIT0B,    &Core::BIT0C,    &Core::BIT0D,    &Core::BIT0E,
+    &Core::BIT0H,    &Core::BIT0L,    &Core::BIT0HL,   &Core::BIT0A,
+    &Core::BIT1B,    &Core::BIT1C,    &Core::BIT1D,    &Core::BIT1E,
+    &Core::BIT1H,    &Core::BIT1L,    &Core::BIT1HL,   &Core::BIT1A,
     //CB50
-    &Core::CBxx,     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,
-    &Core::CBxx,     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,
-    &Core::CBxx,     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,
-    &Core::CBxx,     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,
+    &Core::BIT2B,    &Core::BIT2C,    &Core::BIT2D,    &Core::BIT2E,
+    &Core::BIT2H,    &Core::BIT2L,    &Core::BIT2L,    &Core::BIT2A,
+    &Core::BIT3B,    &Core::BIT3C,    &Core::BIT3D,    &Core::BIT3E,
+    &Core::BIT3H,    &Core::BIT3L,    &Core::BIT3HL,   &Core::BIT3A,
     //CB60
-    &Core::CBxx,     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,
-    &Core::CBxx,     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,
-    &Core::CBxx,     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,
-    &Core::CBxx,     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,
+    &Core::BIT4B,    &Core::BIT4C,    &Core::BIT4D,    &Core::BIT4E,
+    &Core::BIT4H,    &Core::BIT4L,    &Core::BIT4HL,   &Core::BIT4A,
+    &Core::BIT5B,    &Core::BIT5C,    &Core::BIT5D,    &Core::BIT5E,
+    &Core::BIT5H,    &Core::BIT5L,    &Core::BIT5HL,   &Core::BIT5A,
     //CB70
-    &Core::CBxx,     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,
-    &Core::CBxx,     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,
-    &Core::CBxx,     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,
-    &Core::CBxx,     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,
+    &Core::BIT6B,    &Core::BIT6C,    &Core::BIT6D,    &Core::BIT6E,
+    &Core::BIT6H,    &Core::BIT6L,    &Core::BIT6HL,   &Core::BIT6A,
+    &Core::BIT7B,    &Core::BIT7C,    &Core::BIT7D,    &Core::BIT7E,
+    &Core::BIT7H,    &Core::BIT7L,    &Core::BIT7HL,   &Core::BIT7A,
     //CB80
     &Core::RES0B,    &Core::RES0C,    &Core::RES0D,    &Core::RES0E,
     &Core::RES0H,    &Core::RES0L,    &Core::RES0HL,   &Core::RES0A,
@@ -143,8 +143,8 @@ const Core::opCode Core::opCodesCB[] = {
     //CBB0
     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,
     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,
-    &Core::CBxx,     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,
-    &Core::CBxx,     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,
+    &Core::RES7B,    &Core::RES7C,    &Core::RES7D,    &Core::RES7E,
+    &Core::RES7H,    &Core::RES7L,    &Core::RES7HL,   &Core::RES7A,
     //CBC0
     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,
     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,
@@ -163,7 +163,7 @@ const Core::opCode Core::opCodesCB[] = {
     //CBF0
     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,
     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,
-    &Core::CBxx,     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,
-    &Core::CBxx,     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,
+    &Core::SET7B,    &Core::SET7C,    &Core::SET7D,    &Core::SET7E,
+    &Core::SET7H,    &Core::SET7L,    &Core::SET7HL,   &Core::SET7A,
 };
 }

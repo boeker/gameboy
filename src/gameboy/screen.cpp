@@ -74,6 +74,7 @@ void Screen::step(unsigned int lastClocks) {
             }
         break;
         case VBLANK:
+            memory->write(0xFF0F, memory->read(0xFF0F) | 0x01); //Enable V-BLANK Interrupt Flag
             if (clocks >= 114) {
                 clocks = 0;
                 ++line;
