@@ -4,6 +4,7 @@
 #include <QFileDialog>
 #include <QKeyEvent>
 #include <QString>
+#include <QStringList>
 #include "ui_mainwindow.h"
 #include "screenwidget.h"
 #include "emuthread.h"
@@ -34,6 +35,12 @@ MainWindow::MainWindow(QWidget *parent) :
     emuThread = new EmuThread(gameboyCore, screenWidget);
     screenWidget->doneCurrent();
     screenWidget->context()->moveToThread(emuThread);
+
+    QStringList args = QCoreApplication::arguments();
+    if (args.size() > 1) {
+        gameboyCore->loadROM(args.at(1).toStdString());
+        continueEmulation();
+    }
 }
 
 MainWindow::~MainWindow() {
