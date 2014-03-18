@@ -1,8 +1,11 @@
 #include "mainwindow.h"
 
 #include <QActionGroup>
+#include <QDebug>
+#include <QDropEvent>
 #include <QFileDialog>
 #include <QKeyEvent>
+#include <QMimeData>
 #include <QString>
 #include <QStringList>
 #include "ui_mainwindow.h"
@@ -41,8 +44,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     QStringList args = QCoreApplication::arguments();
     if (args.size() > 1) {
-        gameboyCore->loadROM(args.at(1).toStdString());
-        continueEmulation();
+        loadROM(args.at(1));
     }
 }
 
@@ -54,12 +56,18 @@ MainWindow::~MainWindow() {
     delete ui;
 }
 
+void MainWindow::setScaling(int scaling) {
+    screenWidget->resize(160*scaling, 144*scaling);
+    resize(160*scaling, 144*scaling + ui->menubar->height());
+}
+
 void MainWindow::debugger() {
     pauseEmulation();
 
     if (!debuggerWindow->isVisible()) {
         debuggerWindow->show();
     }
+    
     debuggerWindow->refresh();   
 }
 
@@ -83,18 +91,19 @@ void MainWindow::pauseEmulation() {
 
 void MainWindow::loadROM() {
     QString fileName = QFileDialog::getOpenFileName(this, "Open ROM", "", "Gameboy ROMs (*.gb)");
-    if (!fileName.isNull()) {
-        pauseEmulation();
 
-        gameboyCore->reset();
-        gameboyCore->loadROM(fileName.toStdString());
-        continueEmulation();
+    if (!fileName.isNull()) {
+        loadROM(fileName);
     }
 }
 
-void MainWindow::setScaling(int scaling) {
-    screenWidget->resize(160*scaling, 144*scaling);
-    resize(160*scaling, 144*scaling + ui->menubar->height());
+void MainWindow::loadROM(const QString &file) {
+    pauseEmulation();
+
+    gameboyCore->reset();
+    gameboyCore->loadROM(file.toStdString());
+
+    continueEmulation();
 }
 
 void MainWindow::scale1x() {
@@ -175,3 +184,14 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event) {
     }
 }
 
+void MainWindow::dragEnterEvent(QDragEnterEvent *event) {
+    event->accept();
+}
+
+void MainWindow::dropEvent(QDropEvent *event) {
+    const QMimeData *mimeData = static_cast<QDropEvent*>(event)->mimeData();
+
+    if (mimeData->hasUrls()) {
+        loadROM(mimeData->urls().at(0).toLocalFile());
+    }
+}

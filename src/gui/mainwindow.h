@@ -17,6 +17,8 @@ class Keyboard;
 
 class ScreenWidget;
 class EmuThread;
+class QDropEvent;
+class QDragEnterEvent;
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -31,6 +33,7 @@ class MainWindow : public QMainWindow {
     void continueEmulation();
     void pauseEmulation();
     void loadROM();
+    void loadROM(const QString &file);
     void scale1x();
     void scale2x();
     void scale4x();
@@ -39,6 +42,8 @@ class MainWindow : public QMainWindow {
  protected:
     void keyPressEvent(QKeyEvent *event);
     void keyReleaseEvent(QKeyEvent *event);
+    void dragEnterEvent(QDragEnterEvent *ev);
+    void dropEvent(QDropEvent *ev);
 
  private:
     Ui::MainWindow *ui;
