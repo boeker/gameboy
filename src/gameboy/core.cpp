@@ -67,6 +67,20 @@ void Core::emulateCycle() {
     updateKeyRegister();
 }
 
+void Core::handleCB() {
+    (this->*opCodesCB[memory->read(registers->pc++)])();
+}
+
+void Core::xx() {
+    qDebug() << "Unknown opcode: " << QString("%1").arg(memory->read(registers->pc-1), 0, 16);
+    exit(EXIT_FAILURE);
+}
+
+void Core::CBxx() {
+    qDebug() << "Unknown opcode: cb" << QString("%1").arg(memory->read(registers->pc-1), 0, 16);
+    exit(EXIT_FAILURE);
+}
+
 void Core::emulateUntilVBlank() {
     do {
         emulateCycle();
@@ -117,66 +131,5 @@ void Core::updateKeyRegister() { //Keys are active-low
             memory->write(0xFF00, memory->read(0xFF00) | 0x01);
         }
     }
-}
-
-void Core::opcdump() {
-    //log("|-----");
-    //log(memory->read(registers->pc));
-    //log("@");
-    //log(registers->pc);
-    //log(", ");
-    //log(clock);
-    //log("-----|\n");
-    //log(": ");
-    //log("\n");
-}
-
-void Core::regdump() {
-    qDebug() << "AF: ";
-    qDebug() << registers->getAF();
-    qDebug() << "A: ";
-    qDebug() << registers->getA();
-    qDebug() << ", ";
-    qDebug() << "BC: ";
-    qDebug() << registers->getBC();
-    qDebug() << ", ";
-    qDebug() << "DE: ";
-    qDebug() << registers->getDE();
-    qDebug() << ", ";
-    qDebug() << "HL: ";
-    qDebug() << registers->getHL();
-    qDebug() << ", ";
-    qDebug() << "SP: ";
-    qDebug() << registers->getSP();
-    qDebug() << ", ";
-    qDebug() << "Z: ";
-    qDebug() << (registers->getZeroFlag() ? "true" : "false");
-    qDebug() << ", ";
-    qDebug() << "N: ";
-    qDebug() << (registers->getSubFlag() ? "true" : "false");
-    qDebug() << ", ";
-    qDebug() << "H: ";
-    qDebug() << (registers->getHalfCarryFlag() ? "true" : "false");
-    qDebug() << ", ";
-    qDebug() << "C: ";
-    qDebug() << (registers->getCarryFlag() ? "true" : "false");
-}
-
-void Core::sysdump() {
-    memory->dumpToFile("dump.bin");
-}
-
-void Core::handleCB() {
-    (this->*opCodesCB[memory->read(registers->pc++)])();
-}
-
-void Core::xx() {
-    qDebug() << "Unknown opcode: " << QString("%1").arg(memory->read(registers->pc-1), 0, 16);
-    exit(EXIT_FAILURE);
-}
-
-void Core::CBxx() {
-    qDebug() << "Unknown opcode: cb" << QString("%1").arg(memory->read(registers->pc-1), 0, 16);
-    exit(EXIT_FAILURE);
 }
 }

@@ -28,15 +28,11 @@ class Core {
     bool drawFlagSet();
 
     void emulateCycle();
-    void emulateUntilVBlank();
-    void updateKeyRegister();
-
-    void opcdump();
-    void regdump();
-    void sysdump();
     void handleCB();
     void xx();
     void CBxx();
+    void emulateUntilVBlank();
+    void updateKeyRegister();
 
     CPURegisters *registers;
     Memory *memory;

@@ -24,11 +24,14 @@ class DebuggerWindow : public QDialog {
     ~DebuggerWindow();
 
  public slots:
+    void loadMemory();
+    void jumpToPC();
     void refresh();
     void step();
 
  private:
-    QString toHexString(int value);
+    QString toDoubleHexString(int value);
+    QString toByteHexString(int value);
 
  private:
     Ui::DebuggerWindow *ui;

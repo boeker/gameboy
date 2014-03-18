@@ -2,9 +2,11 @@
 
 #include "ui_debuggerwindow.h"
 #include <QCheckbox>
+#include <QPalette>
 #include "mainwindow.h"
 #include "emuthread.h"
 #include "gameboy/core.h"
+#include "gameboy/memory.h"
 #include "gameboy/cpuregisters.h"
 
 DebuggerWindow::DebuggerWindow(QWidget *parent, gameboy::Core *core,
@@ -20,13 +22,28 @@ DebuggerWindow::DebuggerWindow(QWidget *parent, gameboy::Core *core,
 DebuggerWindow::~DebuggerWindow() {
 }
 
+void DebuggerWindow::loadMemory() {
+    ui->listWidget->clear();
+
+    for (int i = 0; i <= 0xFFFF; ++i) {
+        ui->listWidget->addItem(toDoubleHexString(i) + ":  " + toByteHexString(gameboyCore->memory->read(i)));
+    }
+}
+
+void DebuggerWindow::jumpToPC() {
+    if (ui->listWidget->count() > 0) {
+        ui->listWidget->setCurrentRow(0);
+        ui->listWidget->setCurrentRow(gameboyCore->registers->pc);
+    }
+}
+
 void DebuggerWindow::refresh() {
-    ui->labelAFVal->setText(toHexString(gameboyCore->registers->getAF()));
-    ui->labelBCVal->setText(toHexString(gameboyCore->registers->getBC()));
-    ui->labelDEVal->setText(toHexString(gameboyCore->registers->getDE()));
-    ui->labelHLVal->setText(toHexString(gameboyCore->registers->getHL()));
-    ui->labelSPVal->setText(toHexString(gameboyCore->registers->getSP()));
-    ui->labelPCVal->setText(toHexString(gameboyCore->registers->pc));
+    ui->lineEditAF->setText(toDoubleHexString(gameboyCore->registers->getAF()));
+    ui->lineEditBC->setText(toDoubleHexString(gameboyCore->registers->getBC()));
+    ui->lineEditDE->setText(toDoubleHexString(gameboyCore->registers->getDE()));
+    ui->lineEditHL->setText(toDoubleHexString(gameboyCore->registers->getHL()));
+    ui->lineEditSP->setText(toDoubleHexString(gameboyCore->registers->getSP()));
+    ui->lineEditPC->setText(toDoubleHexString(gameboyCore->registers->pc));
 
     ui->checkBoxZeroFlag->setChecked(gameboyCore->registers->getZeroFlag());
     ui->checkBoxSubFlag->setChecked(gameboyCore->registers->getSubFlag());
@@ -43,9 +60,14 @@ void DebuggerWindow::step() {
     emuThread->singleStep = false;
 
     refresh();
+    jumpToPC();
 }
 
 
-QString DebuggerWindow::toHexString(int value) {
+QString DebuggerWindow::toDoubleHexString(int value) {
     return QString("%1").arg(value, 4, 16, QChar('0')).toUpper();
+}
+
+QString DebuggerWindow::toByteHexString(int value) {
+    return QString("%1").arg(value, 2, 16, QChar('0')).toUpper();
 }
