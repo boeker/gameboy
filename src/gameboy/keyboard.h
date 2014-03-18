@@ -1,22 +1,24 @@
 #ifndef GAMEBOY_KEYBOARD_H
 #define GAMEBOY_KEYBOARD_H
 
+#include <atomic>
+
 namespace gameboy {
 class Keyboard {
  public:
     Keyboard();
     virtual ~Keyboard();
 
-    bool up;
-    bool down;
-    bool left;
-    bool right;
+    std::atomic<bool> up;
+    std::atomic<bool> down;
+    std::atomic<bool> left;
+    std::atomic<bool> right;
 
-    bool select;
-    bool start;
+    std::atomic<bool> select;
+    std::atomic<bool> start;
 
-    bool a;
-    bool b;
+    std::atomic<bool> a;
+    std::atomic<bool> b;
 };
 }
 
