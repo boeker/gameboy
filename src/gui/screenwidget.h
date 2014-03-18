@@ -2,6 +2,7 @@
 #define GUI_SCREENWIDGET_H
 
 #include <QGLWidget>
+#include <atomic>
 #include "util/color.h"
 
 class ScreenWidget : public QGLWidget {
@@ -12,9 +13,9 @@ class ScreenWidget : public QGLWidget {
     void paintEvent(QPaintEvent *);
     void resizePub(int w, int h);
 
-    volatile bool resizeNeeded;
-    volatile int newWidth;
-    volatile int newHeight;
+    std::atomic<bool> resizeNeeded;
+    std::atomic<int> newWidth;
+    std::atomic<int> newHeight;
 
  protected:
     void initializeGL();

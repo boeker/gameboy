@@ -257,7 +257,7 @@
  <connections>
   <connection>
    <sender>refreshButton</sender>
-   <signal>pressed()</signal>
+   <signal>clicked()</signal>
    <receiver>DebuggerWindow</receiver>
    <slot>refresh()</slot>
    <hints>
@@ -271,8 +271,25 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>stepButton</sender>
+   <signal>clicked()</signal>
+   <receiver>DebuggerWindow</receiver>
+   <slot>step()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>184</x>
+     <y>498</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>184</x>
+     <y>259</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>refresh()</slot>
+  <slot>step()</slot>
  </slots>
 </ui>

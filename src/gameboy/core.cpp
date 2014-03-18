@@ -52,19 +52,19 @@ bool Core::drawFlagSet() {
 }
 
 void Core::emulateCycle() {
-    (this->*opCodes[memory->read(registers->pc++)])();
-    clock += lastClocks;
-    screen->step(lastClocks);
-    updateKeyRegister();
-
     uint8_t interrupt = memory->read(0xFF0F) & memory->read(0xFFFF);
     if (registers->getIME() && interrupt) {
         if (interrupt & 0x01) { // V-BLANK
-            memory->write(0xFF0F, memory->read(0xFF0F) & 0xFE); //Disable Flag
+            memory->write(0xFF0F, memory->read(0xFF0F) & 0xFE); // Disable Flag
             INT40();
         }
+    } else {
+        (this->*opCodes[memory->read(registers->pc++)])();
     }
+
     clock += lastClocks;
+    screen->step(lastClocks);
+    updateKeyRegister();
 }
 
 void Core::emulateUntilVBlank() {
@@ -76,43 +76,43 @@ void Core::emulateUntilVBlank() {
 void Core::updateKeyRegister() { //Keys are active-low
     if ((memory->read(0xFF00) & 0x20) == 0) { //Bit 5
         if (keyboard->start) {
-            memory->write(0xFF00, memory->read(0xFF00) &  0xF7);
+            memory->write(0xFF00, memory->read(0xFF00) & 0xF7);
         } else {
             memory->write(0xFF00, memory->read(0xFF00) | 0x08);
         }
         if (keyboard->select) {
-            memory->write(0xFF00, memory->read(0xFF00) &  0xFB);
+            memory->write(0xFF00, memory->read(0xFF00) & 0xFB);
         } else {
             memory->write(0xFF00, memory->read(0xFF00) | 0x04);
         }
         if (keyboard->b) {
-            memory->write(0xFF00, memory->read(0xFF00) &  0xFD);
+            memory->write(0xFF00, memory->read(0xFF00) & 0xFD);
         } else {
             memory->write(0xFF00, memory->read(0xFF00) | 0x02);
         }
         if (keyboard->a) {
-            memory->write(0xFF00, memory->read(0xFF00) &  0xFE);
+            memory->write(0xFF00, memory->read(0xFF00) & 0xFE);
         } else {
             memory->write(0xFF00, memory->read(0xFF00) | 0x01);
         }
     } else if ((memory->read(0xFF00) & 0x10) == 0) { //Bit 4
         if (keyboard->down) {
-            memory->write(0xFF00, memory->read(0xFF00) &  0xF7);
+            memory->write(0xFF00, memory->read(0xFF00) & 0xF7);
         } else {
             memory->write(0xFF00, memory->read(0xFF00) | 0x08);
         }
         if (keyboard->up) {
-            memory->write(0xFF00, memory->read(0xFF00) &  0xFB);
+            memory->write(0xFF00, memory->read(0xFF00) & 0xFB);
         } else {
             memory->write(0xFF00, memory->read(0xFF00) | 0x04);
         }
         if (keyboard->left) {
-            memory->write(0xFF00, memory->read(0xFF00) &  0xFD);
+            memory->write(0xFF00, memory->read(0xFF00) & 0xFD);
         } else {
             memory->write(0xFF00, memory->read(0xFF00) | 0x02);
         }
         if (keyboard->right) {
-            memory->write(0xFF00, memory->read(0xFF00) &  0xFE);
+            memory->write(0xFF00, memory->read(0xFF00) & 0xFE);
         } else {
             memory->write(0xFF00, memory->read(0xFF00) | 0x01);
         }

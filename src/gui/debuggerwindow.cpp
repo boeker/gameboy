@@ -2,13 +2,18 @@
 
 #include "ui_debuggerwindow.h"
 #include <QCheckbox>
+#include "mainwindow.h"
+#include "emuthread.h"
 #include "gameboy/core.h"
 #include "gameboy/cpuregisters.h"
 
-DebuggerWindow::DebuggerWindow(QWidget *parent, gameboy::Core *core) :
+DebuggerWindow::DebuggerWindow(QWidget *parent, gameboy::Core *core,
+                               MainWindow *mainWindow, EmuThread *emuThread) :
     QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint),
     ui(new Ui::DebuggerWindow),
-    gameboyCore(core) {
+    mainWindow(mainWindow),
+    gameboyCore(core),
+    emuThread(emuThread) {
         ui->setupUi(this);
 }
 
@@ -27,6 +32,17 @@ void DebuggerWindow::refresh() {
     ui->checkBoxSubFlag->setChecked(gameboyCore->registers->getSubFlag());
     ui->checkBoxHalfCarryFlag->setChecked(gameboyCore->registers->getHalfCarryFlag());
     ui->checkBoxCarryFlag->setChecked(gameboyCore->registers->getCarryFlag());
+}
+
+void DebuggerWindow::step() {
+    mainWindow->pauseEmulation();
+
+    emuThread->singleStep = true;
+    mainWindow->continueEmulation();
+    mainWindow->pauseEmulation();
+    emuThread->singleStep = false;
+
+    refresh();
 }
 
 

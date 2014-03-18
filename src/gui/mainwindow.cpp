@@ -40,7 +40,7 @@ MainWindow::MainWindow(QWidget *parent) :
     screenWidget->doneCurrent();
     screenWidget->context()->moveToThread(emuThread);
 
-    debuggerWindow = new DebuggerWindow(this, gameboyCore);
+    debuggerWindow = new DebuggerWindow(this, gameboyCore, this, emuThread);
 
     QStringList args = QCoreApplication::arguments();
     if (args.size() > 1) {

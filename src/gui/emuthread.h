@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QThread>
 #include <QSize>
+#include <atomic>
 
 namespace gameboy {
 class Core;
@@ -18,10 +19,11 @@ class EmuThread : public QThread {
     EmuThread(gameboy::Core *, ScreenWidget *);
     void run();
 
-    volatile bool stopped;
+    std::atomic<bool> stopped;
+    std::atomic<bool> singleStep;
 
  private:
-    gameboy::Core *gbCore;
+    gameboy::Core *gameboyCore;
     ScreenWidget *screenWidget;
 };
 
