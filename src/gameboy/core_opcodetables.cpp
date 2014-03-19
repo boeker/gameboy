@@ -4,12 +4,12 @@ namespace gameboy {
 const Core::opCode Core::opCodes[] = {
     //00
     &Core::NOP,      &Core::LDBCnn,   &Core::LDBCMA,   &Core::INCBC,
-    &Core::INCrB,    &Core::DECrB,    &Core::LDrnB,    &Core::RLCA,
+    &Core::INCrB,    &Core::DECrB,    &Core::LDrnB,    &Core::RLCANCB,
     &Core::LDnnSP,   &Core::ADDHLBC,  &Core::LDABCM,   &Core::DECBC,
-    &Core::INCrC,    &Core::DECrC,    &Core::LDrnC,    &Core::RRCA,
+    &Core::INCrC,    &Core::DECrC,    &Core::LDrnC,    &Core::RRCANCB,
     //10
     &Core::STOP,     &Core::LDDEnn,   &Core::LDDEMA,   &Core::INCDE,
-    &Core::INCrD,    &Core::DECrD,    &Core::LDrnD,    &Core::xx,
+    &Core::INCrD,    &Core::DECrD,    &Core::LDrnD,    &Core::RLANCB,
     &Core::JRn,      &Core::ADDHLDE,  &Core::LDADEM,   &Core::DECDE,
     &Core::INCrE,    &Core::DECrE,    &Core::LDrnE,    &Core::RRANCB,
     //20
@@ -21,7 +21,7 @@ const Core::opCode Core::opCodes[] = {
     &Core::JRNCn,    &Core::LDSPnn,   &Core::LDDHLA,   &Core::INCSP,
     &Core::INCHLM,   &Core::DECHLM,   &Core::LDHLmn,   &Core::SCF,
     &Core::JRCn,     &Core::ADDHLSP,  &Core::LDDAHL,   &Core::DECSP,
-    &Core::INCrA,    &Core::DECrA,    &Core::LDrnA,    &Core::xx,
+    &Core::INCrA,    &Core::DECrA,    &Core::LDrnA,    &Core::CCF,
     //40
     &Core::LDrrBB,   &Core::LDrrBC,   &Core::LDrrBD,   &Core::LDrrBE,
     &Core::LDrrBH,   &Core::LDrrBL,   &Core::LDrHLMB,  &Core::LDrrBA,
@@ -88,8 +88,8 @@ const Core::opCode Core::opCodesCB[] = {
     //CB00
     &Core::RLCB,     &Core::RLCC,     &Core::RLCD,     &Core::RLCE,
     &Core::RLCH,     &Core::RLCL,     &Core::RLCHLM,   &Core::RLCA,
-    &Core::CBxx,     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,
-    &Core::CBxx,     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,
+    &Core::RRCB,     &Core::RRCC,     &Core::RRCD,     &Core::RRCE,
+    &Core::RRCH,     &Core::RRCL,     &Core::RRCHL,    &Core::RRCA,
     //CB10
     &Core::RLB,      &Core::RLC,      &Core::RLD,      &Core::RLE,
     &Core::RLH,      &Core::RLL,      &Core::RLHLM,    &Core::RLA,
@@ -98,8 +98,8 @@ const Core::opCode Core::opCodesCB[] = {
     //CB20
     &Core::SLAB,     &Core::SLAC,     &Core::SLAD,     &Core::SLAE,
     &Core::SLAH,     &Core::SLAL,     &Core::SLAHL,    &Core::SLAA,
-    &Core::CBxx,     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,
-    &Core::CBxx,     &Core::CBxx,     &Core::CBxx,     &Core::CBxx,
+    &Core::SRAB,     &Core::SRAC,     &Core::SRAD,     &Core::SRAE,
+    &Core::SRAH,     &Core::SRAL,     &Core::SRAHL,    &Core::SRAA,
     //CB30
     &Core::SWAPrB,   &Core::SWAPrC,   &Core::SWAPrD,   &Core::SWAPrE,
     &Core::SWAPrH,   &Core::SWAPrL,   &Core::SWAPrHLm, &Core::SWAPrA,
