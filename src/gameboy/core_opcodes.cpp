@@ -1,5 +1,6 @@
 #include "core.h"
 
+#include <QDebug>
 #include "cpuregisters.h"
 #include "memory.h"
 
@@ -251,8 +252,7 @@ void Core::ADDHLDE() { uint16_t n = registers->getDE(); uint16_t reg = registers
 void Core::ADDHLHL() { uint16_t n = registers->getHL(); uint16_t reg = registers->getHL(); registers->setHL(registers->getHL() + n); registers->setSubFlag(false); registers->setHalfCarryFlag((((reg & 0xFFF) + (n & 0xFFF)) & 0x1000) != 0); registers->setCarryFlag((reg + n) > 0xFFFF); lastClocks = 2; }
 void Core::ADDHLSP() { uint16_t n = registers->getSP(); uint16_t reg = registers->getHL(); registers->setHL(registers->getHL() + n); registers->setSubFlag(false); registers->setHalfCarryFlag((((reg & 0xFFF) + (n & 0xFFF)) & 0x1000) != 0); registers->setCarryFlag((reg + n) > 0xFFFF); lastClocks = 2; }
 
-//TODO Check the HCF
-void Core::ADDSPn() { int8_t n = (int8_t)memory->read(registers->pc); uint16_t sp = registers->getSP(); registers->setSP(sp + n); registers->setZeroFlag(false); registers->setSubFlag(false); registers->setHalfCarryFlag((((sp & 0xFFF) + (n & 0xFFF)) & 0x1000) != 0); registers->setCarryFlag((sp + n) > 0xFFFF); ++registers->pc; lastClocks = 4; }
+void Core::ADDSPn() { int8_t n = (int8_t)memory->read(registers->pc); uint16_t sp = registers->getSP(); int res = sp + n; registers->setSP(res); registers->setZeroFlag(false); registers->setSubFlag(false); registers->setHalfCarryFlag(((sp ^ n ^ (res & 0xFFFF)) & 0x10) == 0x10); registers->setCarryFlag(((sp ^ n ^ (res & 0xFFFF)) & 0x100) == 0x100); ++registers->pc; lastClocks = 4; }
 
 //----------JUMPS----------//
 void Core::JPnn() { registers->pc = memory->readW(registers->pc); lastClocks = 3; }
