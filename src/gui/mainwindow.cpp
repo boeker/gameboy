@@ -75,18 +75,18 @@ void MainWindow::continueEmulation() {
     if (!emuThread->isRunning()) {
         emuThread->stopped = false;
         emuThread->start();
-        ui->actionContinue->setEnabled(false);
-        ui->actionPause->setEnabled(true);
     }
+    ui->actionContinue->setEnabled(false);
+    ui->actionPause->setEnabled(true);
 }
 
 void MainWindow::pauseEmulation() {
     if (emuThread->isRunning()) {
         emuThread->stopped = true;
         emuThread->wait();
-        ui->actionContinue->setEnabled(true);
-        ui->actionPause->setEnabled(false);
     }
+    ui->actionContinue->setEnabled(true);
+    ui->actionPause->setEnabled(false);
 }
 
 void MainWindow::loadROM() {
@@ -103,7 +103,7 @@ void MainWindow::loadROM(const QString &file) {
     gameboyCore->reset();
     gameboyCore->loadROM(file.toStdString());
 
-    continueEmulation();
+    //continueEmulation();
 }
 
 void MainWindow::scale1x() {

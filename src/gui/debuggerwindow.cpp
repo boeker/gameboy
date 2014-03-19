@@ -2,6 +2,7 @@
 
 #include "ui_debuggerwindow.h"
 #include <QCheckbox>
+#include <QDebug>
 #include <QPalette>
 #include "mainwindow.h"
 #include "emuthread.h"
@@ -28,17 +29,17 @@ bool DebuggerWindow::controlsOverridden() {
 }
 
 void DebuggerWindow::loadMemory() {
-    ui->listWidget->clear();
+    ui->listWidgetMemory->clear();
 
     for (int i = 0; i <= 0xFFFF; ++i) {
-        ui->listWidget->addItem(toDoubleHexString(i) + ":  " + toByteHexString(gameboyCore->memory->read(i)));
+        ui->listWidgetMemory->addItem(toDoubleHexString(i) + ":  " + toByteHexString(gameboyCore->memory->read(i)));
     }
 }
 
 void DebuggerWindow::jumpToPC() {
-    if (ui->listWidget->count() > 0) {
-        ui->listWidget->setCurrentRow(0);
-        ui->listWidget->setCurrentRow(gameboyCore->registers->pc);
+    if (ui->listWidgetMemory->count() > 0) {
+        ui->listWidgetMemory->setCurrentRow(0);
+        ui->listWidgetMemory->setCurrentRow(gameboyCore->registers->pc);
     }
 }
 
@@ -101,6 +102,11 @@ void DebuggerWindow::clickedSelect(bool status) {
     gameboyCore->getKeyboard()->select = status;
 }
 
+void DebuggerWindow::breakpointSet() {
+    uint16_t bp = (uint16_t)ui->lineEditBreakpoint->text().toInt(0, 16);
+    gameboyCore->breakpoint = bp;
+    qDebug() << bp;
+}
 
 QString DebuggerWindow::toDoubleHexString(int value) {
     return QString("%1").arg(value, 4, 16, QChar('0')).toUpper();

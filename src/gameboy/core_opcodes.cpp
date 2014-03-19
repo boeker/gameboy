@@ -266,11 +266,11 @@ void Core::JPNCnn() { lastClocks = 3; if (!registers->getCarryFlag()) { ++lastCl
 void Core::JPCnn() { lastClocks = 3; if (registers->getCarryFlag()) { ++lastClocks; registers->pc = memory->readW(registers->pc); } else { registers->pc += 2; } }
 
 //jump to pc+n on condition
-void Core::JRn() { int8_t val = (int8_t)memory->read(registers->pc); ++registers->pc; lastClocks = 2; registers->pc += val; ++lastClocks; }
-void Core::JRNZn() { int8_t val = (int8_t)memory->read(registers->pc); ++registers->pc; lastClocks = 2; if (!registers->getZeroFlag()) { registers->pc += val; ++lastClocks; } }
-void Core::JRZn() { int8_t val = (int8_t)memory->read(registers->pc); ++registers->pc; lastClocks = 2; if (registers->getZeroFlag()) { registers->pc += val; ++lastClocks; } }
-void Core::JRNCn() { int8_t val = (int8_t)memory->read(registers->pc); ++registers->pc; lastClocks = 2; if (!registers->getCarryFlag()) { registers->pc += val; ++lastClocks; } }
-void Core::JRCn() { int8_t val = (int8_t)memory->read(registers->pc); ++registers->pc; lastClocks = 2; if (registers->getCarryFlag()) { registers->pc += val; ++lastClocks; } }
+void Core::JRn() { int8_t val = (int8_t)memory->read(registers->pc++); lastClocks = 2; registers->pc += val; ++lastClocks; }
+void Core::JRNZn() { int8_t val = (int8_t)memory->read(registers->pc++); lastClocks = 2; if (!registers->getZeroFlag()) { registers->pc += val; ++lastClocks; } }
+void Core::JRZn() { int8_t val = (int8_t)memory->read(registers->pc++); lastClocks = 2; if (registers->getZeroFlag()) { registers->pc += val; ++lastClocks; } }
+void Core::JRNCn() { int8_t val = (int8_t)memory->read(registers->pc++); lastClocks = 2; if (!registers->getCarryFlag()) { registers->pc += val; ++lastClocks; } }
+void Core::JRCn() { int8_t val = (int8_t)memory->read(registers->pc++); lastClocks = 2; if (registers->getCarryFlag()) { registers->pc += val; ++lastClocks; } }
 
 //----------CALLS----------//
 void Core::CALLnn() { registers->setSP(registers->getSP()-2); memory->writeW(registers->getSP(), registers->pc+2); registers->pc = memory->readW(registers->pc); lastClocks = 6; }
@@ -294,7 +294,8 @@ void Core::PUSHBC() { registers->setSP(registers->getSP()-2); memory->writeW(reg
 void Core::PUSHDE() { registers->setSP(registers->getSP()-2); memory->writeW(registers->getSP(), registers->getDE()); lastClocks = 3; }
 void Core::PUSHHL() { registers->setSP(registers->getSP()-2); memory->writeW(registers->getSP(), registers->getHL()); lastClocks = 3; }
 
-void Core::POPAF() { registers->setAF(memory->readW(registers->getSP())); registers->setSP(registers->getSP()+2); lastClocks = 3; }
+//POPAF is special, retains the lower 4 Bits of F
+void Core::POPAF() { registers->setAF((memory->readW(registers->getSP()) & 0xFFF0) | (registers->getAF() & 0x000F)); registers->setSP(registers->getSP()+2); lastClocks = 3; }
 void Core::POPBC() { registers->setBC(memory->readW(registers->getSP())); registers->setSP(registers->getSP()+2); lastClocks = 3; }
 void Core::POPDE() { registers->setDE(memory->readW(registers->getSP())); registers->setSP(registers->getSP()+2); lastClocks = 3; }
 void Core::POPHL() { registers->setHL(memory->readW(registers->getSP())); registers->setSP(registers->getSP()+2); lastClocks = 3; }

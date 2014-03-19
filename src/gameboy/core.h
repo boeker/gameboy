@@ -3,6 +3,7 @@
 
 #include <cstdlib>
 #include <string>
+#include <atomic>
 
 namespace util {
 class Color;
@@ -36,6 +37,8 @@ class Core {
 
     CPURegisters *registers;
     Memory *memory;
+
+    std::atomic<uint16_t> breakpoint;
 
  private:
     Screen *screen;

@@ -37,6 +37,7 @@ class DebuggerWindow : public QDialog {
     void clickedB(bool status);
     void clickedStart(bool status);
     void clickedSelect(bool status);
+    void breakpointSet();
 
  private:
     QString toDoubleHexString(int value);

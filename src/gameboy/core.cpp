@@ -14,6 +14,7 @@ namespace gameboy {
 Core::Core() :
     registers(new CPURegisters),
     memory(new Memory),
+    breakpoint(0),
     screen(new Screen(memory)),
     keyboard(new Keyboard),
     lastClocks(0),
@@ -95,6 +96,10 @@ void Core::CBxx() {
 
 void Core::emulateUntilVBlank() {
     do {
+        if (breakpoint != 0 && breakpoint == registers->pc) {
+            qDebug() << "Breaking, press pause";
+            return;
+        }
         emulateCycle();
     } while (!screen->drawFlagSet());
 }
