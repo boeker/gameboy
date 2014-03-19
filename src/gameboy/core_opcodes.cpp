@@ -332,17 +332,35 @@ void Core::SCF() { registers->setSubFlag(false); registers->setHalfCarryFlag(fal
 void Core::CPL() { registers->setA(registers->getA()^0xFF); registers->setSubFlag(true); registers->setHalfCarryFlag(true); lastClocks = 1; }
 
 void Core::DAA() {
-    if (((registers->getA() & 0x0F) > 9) || registers->getHalfCarryFlag()) {
-        registers->setA(registers->getA()+6);
-    }
-    if (((registers->getA() >> 4) > 9) || registers->getCarryFlag()) {
-        registers->setA(registers->getA()+0x60);
-        registers->setCarryFlag(true);
+    int a = registers->getA();
+
+    if (!registers->getSubFlag()) {
+        if (registers->getHalfCarryFlag() || (a & 0xF) > 9) {
+            a += 0x06;
+        }
+        if (registers->getCarryFlag() || (a > 0x9F)) {
+            a += 0x60;
+        }
     } else {
-        registers->setCarryFlag(false);
+        if (registers->getHalfCarryFlag()) {
+            a = (a - 6) & 0xFF;
+        }
+        if (registers->getCarryFlag()) {
+            a -= 0x60;
+        }
     }
-    registers->setZeroFlag(registers->getA() == 0);
+
     registers->setHalfCarryFlag(false);
+    if ((a & 0x100) == 0x100) {
+        registers->setCarryFlag(true);
+    }
+
+    a &= 0xFF;
+
+    registers->setZeroFlag(a == 0);
+
+    registers->setA(a);
+
     lastClocks = 1;
 }
 
