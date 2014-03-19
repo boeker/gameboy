@@ -132,7 +132,7 @@ void Core::LDSPnn() { registers->setSP(memory->readW(registers->pc)); registers-
 void Core::LDnnSP() { memory->writeW(memory->readW(registers->pc), registers->getSP()); registers->pc += 2; lastClocks = 5; }
 
 //HL = SP+n
-void Core::LDHLSPn() { int8_t val = memory->read(registers->pc++); registers->setHL(registers->getSP() + val); lastClocks = 3; }
+void Core::LDHLSPn() { int8_t n = memory->read(registers->pc++); uint16_t sp = registers->getSP(); uint16_t res = sp + n; registers->setHL(res); registers->setZeroFlag(false); registers->setSubFlag(false); registers->setHalfCarryFlag(((sp ^ n ^ res) & 0x10) == 0x10); registers->setCarryFlag(((sp ^ n ^ res) & 0x100) == 0x100); lastClocks = 3; }
 
 //SP = HL
 void Core::LDSPHL() { registers->setSP(registers->getHL()); lastClocks = 2; }
