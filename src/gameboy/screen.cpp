@@ -3,7 +3,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
-#include <fstream>
+#include <QDebug>
 
 namespace gameboy {
 Screen::Screen(Memory *memory) :
@@ -70,6 +70,7 @@ void Screen::step(unsigned int lastClocks) {
             if (clocks >= 20) {
                 clocks = 0;
                 mode = VRAM;
+                memory->write(0xFF41, memory->read(0xFF41) | 0x03); // Indicate VRAM Mode 00
             }
         break;
         case VRAM:
@@ -77,6 +78,7 @@ void Screen::step(unsigned int lastClocks) {
                 clocks = 0;
                 mode = HBLANK;
                 renderScanLine();
+                memory->write(0xFF41, memory->read(0xFF41) & 0xFC); // Indicate H-Blank Mode 00
             }
         break;
         case HBLANK:
@@ -86,47 +88,63 @@ void Screen::step(unsigned int lastClocks) {
                 if (line == 144) {
                     mode = VBLANK;
                     drawFlag = true;
+                    memory->write(0xFF41, memory->read(0xFF41) & 0xFD); // Indicate V-Blank Mode 01
+                    memory->write(0xFF41, memory->read(0xFF41) | 0x01);
+                    memory->write(0xFF0F, memory->read(0xFF0F) | 0x01); //Set V-Blank Interrupt Flag
                 } else {
                     mode = OAM;
+                    memory->write(0xFF41, memory->read(0xFF41) & 0xFE); // Indicate OAM Mode 10
+                    memory->write(0xFF41, memory->read(0xFF41) | 0x02);
                 }
             }
         break;
         case VBLANK:
-            memory->write(0xFF0F, memory->read(0xFF0F) | 0x01); //Enable V-BLANK Interrupt Flag
             if (clocks >= 114) {
                 clocks = 0;
                 ++line;
                 if (line >= 153) {
                     mode = OAM;
                     line = 0;
+                    memory->write(0xFF41, memory->read(0xFF41) & 0xFE); // Indicate OAM Mode 10
+                    memory->write(0xFF41, memory->read(0xFF41) | 0x02);
                 }
             }
         break;
     }
     //FF44 - LY - LCDC Y-Coordinate (R)
     memory->write(0xFF44, (uint8_t)line);
-    //FF45 - LYC - LY Compare (R/W)
-    //FF41 (STAT) Bit 6 - LYC=LY Coincidence (Selectable)
-    //Bit 2 - Coincidence Flag
-    //0: LYC not equal to LCDC LY
-    //1: LYC = LCDC LY
-    /*if (memory->read(0xFF41) & 0x04) {
+
+    // FF41 (STAT)
+    uint8_t ff41 = memory->read(0xFF41);
+    if (ff41 & 0x40) { // LYC=LY Coincidence Interrupt enabled
         uint8_t ly = memory->read(0xFF44);
         uint8_t lyc = memory->read(0xFF45);
-        if (ly == lyc) {
-            memory->write(0xFF41, memory->read(0xFF41) | 0x40);
-        } else {
-            memory->write(0xFF41, memory->read(0xFF41) & 0xBF);
+
+        if (ff41 & 0x04) { // LYC = LY Interrupt
+            if (ly == lyc) {
+                memory->write(0xFF0F, memory->read(0xFF0F) | 0x02); //Set LCD-STAT Interrupt Flag
+            }
+        } else { // LYC != LY Interrupt
+            if (ly != lyc) {
+                memory->write(0xFF0F, memory->read(0xFF0F) | 0x02); //Set LCD-STAT Interrupt Flag
+            } 
         }
-    } else {
-        uint8_t ly = memory->read(0xFF44);
-        uint8_t lyc = memory->read(0xFF45);
-        if (ly != lyc) {
-            memory->write(0xFF41, memory->read(0xFF41) | 0x40);
-        } else {
-            memory->write(0xFF41, memory->read(0xFF41) & 0xBF);
+    }
+    if (ff41 & 0x20) { // Mode 10 = 0x2
+        if ((ff41 & 0x3) == 0x2) {
+            memory->write(0xFF0F, memory->read(0xFF0F) | 0x02); //Set LCD-STAT Interrupt Flag
         }
-    }*/
+    }
+    if (ff41 & 0x10) { // Mode 01 = 0x1
+        if ((ff41 & 0x3) == 0x1) {
+            memory->write(0xFF0F, memory->read(0xFF0F) | 0x02); //Set LCD-STAT Interrupt Flag
+        }
+    }
+    if (ff41 & 0x08) { // Mode 00 = 0x0
+        if ((ff41 & 0x3) == 0x0) {
+            memory->write(0xFF0F, memory->read(0xFF0F) | 0x02); //Set LCD-STAT Interrupt Flag
+        }
+    }
 }
 
 void Screen::renderScanLine() {

@@ -22,12 +22,21 @@ class DebuggerWindow : public QDialog {
     explicit DebuggerWindow(QWidget *parent, gameboy::Core *core,
                             MainWindow *mainWindow, EmuThread *emuThread);
     ~DebuggerWindow();
+    bool controlsOverridden();
 
  public slots:
     void loadMemory();
     void jumpToPC();
     void refresh();
     void step();
+    void clickedUp(bool status);
+    void clickedDown(bool status);
+    void clickedLeft(bool status);
+    void clickedRight(bool status);
+    void clickedA(bool status);
+    void clickedB(bool status);
+    void clickedStart(bool status);
+    void clickedSelect(bool status);
 
  private:
     QString toDoubleHexString(int value);

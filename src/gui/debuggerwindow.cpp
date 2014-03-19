@@ -8,6 +8,7 @@
 #include "gameboy/core.h"
 #include "gameboy/memory.h"
 #include "gameboy/cpuregisters.h"
+#include "gameboy/keyboard.h"
 
 DebuggerWindow::DebuggerWindow(QWidget *parent, gameboy::Core *core,
                                MainWindow *mainWindow, EmuThread *emuThread) :
@@ -20,6 +21,10 @@ DebuggerWindow::DebuggerWindow(QWidget *parent, gameboy::Core *core,
 }
 
 DebuggerWindow::~DebuggerWindow() {
+}
+
+bool DebuggerWindow::controlsOverridden() {
+    return ui->groupBoxControls->isChecked();
 }
 
 void DebuggerWindow::loadMemory() {
@@ -49,6 +54,7 @@ void DebuggerWindow::refresh() {
     ui->checkBoxSubFlag->setChecked(gameboyCore->registers->getSubFlag());
     ui->checkBoxHalfCarryFlag->setChecked(gameboyCore->registers->getHalfCarryFlag());
     ui->checkBoxCarryFlag->setChecked(gameboyCore->registers->getCarryFlag());
+    ui->checkBoxIME->setChecked(gameboyCore->registers->getIME());
 }
 
 void DebuggerWindow::step() {
@@ -61,6 +67,38 @@ void DebuggerWindow::step() {
 
     refresh();
     jumpToPC();
+}
+
+void DebuggerWindow::clickedUp(bool status) {
+    gameboyCore->getKeyboard()->up = status;
+}
+
+void DebuggerWindow::clickedDown(bool status) {
+    gameboyCore->getKeyboard()->down = status;
+}
+
+void DebuggerWindow::clickedLeft(bool status) {
+    gameboyCore->getKeyboard()->left = status;
+}
+
+void DebuggerWindow::clickedRight(bool status) {
+    gameboyCore->getKeyboard()->right = status;
+}
+
+void DebuggerWindow::clickedA(bool status) {
+    gameboyCore->getKeyboard()->a = status;
+}
+
+void DebuggerWindow::clickedB(bool status) {
+    gameboyCore->getKeyboard()->b = status;
+}
+
+void DebuggerWindow::clickedStart(bool status) {
+    gameboyCore->getKeyboard()->start = status;
+}
+
+void DebuggerWindow::clickedSelect(bool status) {
+    gameboyCore->getKeyboard()->select = status;
 }
 
 

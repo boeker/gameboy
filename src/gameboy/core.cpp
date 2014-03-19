@@ -52,11 +52,23 @@ bool Core::drawFlagSet() {
 }
 
 void Core::emulateCycle() {
-    uint8_t interrupt = memory->read(0xFF0F) & memory->read(0xFFFF);
+    uint8_t interrupt = memory->read(0xFF0F) & memory->read(0xFFFF) & 0x1F;
     if (registers->getIME() && interrupt) {
         if (interrupt & 0x01) { // V-BLANK
             memory->write(0xFF0F, memory->read(0xFF0F) & 0xFE); // Disable Flag
             INT40();
+        } else if (interrupt & 0x02) { // LCD-STAT
+            memory->write(0xFF0F, memory->read(0xFF0F) & 0xFD); // Disable Flag
+            INT48();
+        } else if (interrupt & 0x04) { // TIMER
+            memory->write(0xFF0F, memory->read(0xFF0F) & 0xFB); // Disable Flag
+            INT50();
+        } else if (interrupt & 0x08) { // SERIAL
+            memory->write(0xFF0F, memory->read(0xFF0F) & 0xF7); // Disable Flag
+            INT58();
+        } else if (interrupt & 0x10) { // JOYPAD
+            memory->write(0xFF0F, memory->read(0xFF0F) & 0xEF); // Disable Flag
+            INT60();
         }
     } else {
         (this->*opCodes[memory->read(registers->pc++)])();
@@ -90,42 +102,66 @@ void Core::emulateUntilVBlank() {
 void Core::updateKeyRegister() { //Keys are active-low
     if ((memory->read(0xFF00) & 0x20) == 0) { //Bit 5
         if (keyboard->start) {
+            if (memory->read(0xFF00) & 0x08) {
+                memory->write(0xFF0F, memory->read(0xFF0F) | 0x10);
+            }
             memory->write(0xFF00, memory->read(0xFF00) & 0xF7);
         } else {
             memory->write(0xFF00, memory->read(0xFF00) | 0x08);
         }
         if (keyboard->select) {
+            if (memory->read(0xFF00) & 0x04) {
+                memory->write(0xFF0F, memory->read(0xFF0F) | 0x10);
+            }
             memory->write(0xFF00, memory->read(0xFF00) & 0xFB);
         } else {
             memory->write(0xFF00, memory->read(0xFF00) | 0x04);
         }
         if (keyboard->b) {
+            if (memory->read(0xFF00) & 0x02) {
+                memory->write(0xFF0F, memory->read(0xFF0F) | 0x10);
+            }
             memory->write(0xFF00, memory->read(0xFF00) & 0xFD);
         } else {
             memory->write(0xFF00, memory->read(0xFF00) | 0x02);
         }
         if (keyboard->a) {
+            if (memory->read(0xFF00) & 0x01) {
+                memory->write(0xFF0F, memory->read(0xFF0F) | 0x10);
+            }
             memory->write(0xFF00, memory->read(0xFF00) & 0xFE);
         } else {
             memory->write(0xFF00, memory->read(0xFF00) | 0x01);
         }
     } else if ((memory->read(0xFF00) & 0x10) == 0) { //Bit 4
         if (keyboard->down) {
+            if (memory->read(0xFF00) & 0x08) {
+                memory->write(0xFF0F, memory->read(0xFF0F) | 0x10);
+            }
             memory->write(0xFF00, memory->read(0xFF00) & 0xF7);
         } else {
             memory->write(0xFF00, memory->read(0xFF00) | 0x08);
         }
         if (keyboard->up) {
+            if (memory->read(0xFF00) & 0x04) {
+                memory->write(0xFF0F, memory->read(0xFF0F) | 0x10);
+            }
             memory->write(0xFF00, memory->read(0xFF00) & 0xFB);
         } else {
             memory->write(0xFF00, memory->read(0xFF00) | 0x04);
         }
         if (keyboard->left) {
+            if (memory->read(0xFF00) & 0x02) {
+                memory->write(0xFF0F, memory->read(0xFF0F) | 0x10);
+            }
             memory->write(0xFF00, memory->read(0xFF00) & 0xFD);
         } else {
             memory->write(0xFF00, memory->read(0xFF00) | 0x02);
         }
         if (keyboard->right) {
+            if (memory->read(0xFF01) & 0x08) {
+                memory->write(0xFF0F, memory->read(0xFF0F) | 0x10);
+            }
             memory->write(0xFF00, memory->read(0xFF00) & 0xFE);
         } else {
             memory->write(0xFF00, memory->read(0xFF00) | 0x01);

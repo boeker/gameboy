@@ -123,64 +123,68 @@ void MainWindow::scale6x() {
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event) {
-    switch (event->key()) {
-    case Qt::Key_Up:
-        keyboard->up = true;
-    break;
-    case Qt::Key_Down:
-        keyboard->down = true;
-    break;
-    case Qt::Key_Left:
-        keyboard->left = true;
-    break;
-    case Qt::Key_Right:
-        keyboard->right = true;
-    break;
-    case Qt::Key_C:
-        keyboard->select = true;
-    break;
-    case Qt::Key_V:
-        keyboard->start = true;
-    break;
-    case Qt::Key_F:
-        keyboard->a = true;
-    break;
-    case Qt::Key_D:
-        keyboard->b = true;
-    break;
-    default: //To make the compiler STFU
-    break;
-   } 
-}
-
-void MainWindow::keyReleaseEvent(QKeyEvent *event) {
-    switch (event->key()) {
+    if (!debuggerWindow->controlsOverridden()) {
+        switch (event->key()) {
         case Qt::Key_Up:
-            keyboard->up = false;
+            keyboard->up = true;
         break;
         case Qt::Key_Down:
-            keyboard->down = false;
+            keyboard->down = true;
         break;
         case Qt::Key_Left:
-            keyboard->left = false;
+            keyboard->left = true;
         break;
         case Qt::Key_Right:
-            keyboard->right = false;
+            keyboard->right = true;
         break;
         case Qt::Key_C:
-            keyboard->select = false;
+            keyboard->select = true;
         break;
         case Qt::Key_V:
-            keyboard->start = false;
+            keyboard->start = true;
         break;
         case Qt::Key_F:
-            keyboard->a = false;
+            keyboard->a = true;
         break;
         case Qt::Key_D:
-            keyboard->b = false;
+            keyboard->b = true;
         break;
         default: //To make the compiler STFU
         break;
+        } 
+    }
+}
+
+void MainWindow::keyReleaseEvent(QKeyEvent *event) {
+    if (!debuggerWindow->controlsOverridden()) {
+        switch (event->key()) {
+            case Qt::Key_Up:
+                keyboard->up = false;
+            break;
+            case Qt::Key_Down:
+                keyboard->down = false;
+            break;
+            case Qt::Key_Left:
+                keyboard->left = false;
+            break;
+            case Qt::Key_Right:
+                keyboard->right = false;
+            break;
+            case Qt::Key_C:
+                keyboard->select = false;
+            break;
+            case Qt::Key_V:
+                keyboard->start = false;
+            break;
+            case Qt::Key_F:
+                keyboard->a = false;
+            break;
+            case Qt::Key_D:
+                keyboard->b = false;
+            break;
+            default: //To make the compiler STFU
+            break;
+        }
     }
 }
 
