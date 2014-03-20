@@ -27,6 +27,7 @@ class Screen {
     void renderBackground();
     void renderSprites();
 
+    const util::Color& getColor(int i);
     void decodeTile(uint16_t tileAddr, uint8_t palette,
                     bool yFlip, bool xFlip);
 
@@ -44,8 +45,6 @@ class Screen {
     util::Color *framebuffer;
     util::Color **mapFrameBuffer;
     util::Color **decodedTile;
-    util::Color bgColorNull;
-    util::Color spColorNull;
     Memory *memory;
 };
 }

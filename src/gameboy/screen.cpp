@@ -3,7 +3,6 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
-#include <QDebug>
 #include "memory.h"
 
 namespace gameboy {
@@ -167,22 +166,8 @@ void Screen::renderBackground() {
     util::Color colors[4];
 
     for (int i = 0; i < 4; ++i) {
-        switch ((palette >> (i*2)) & 0x3) {
-            case 0:
-                colors[i] = util::Color(255, 255, 255);
-            break;
-            case 1:
-                colors[i] = util::Color(192, 192, 192);
-            break;
-            case 2:
-                colors[i] = util::Color(96, 96, 96);
-            break;
-            case 3:
-                colors[i] = util::Color(0, 0, 0);
-            break;
-        }
+        colors[i] = getColor((palette >> (i*2)) & 0x3);
     }
-    bgColorNull = colors[0];
 
     //Bit 4 - BG & Window Tile Data Select
     uint16_t tileSet = (memory->read(0xFF40) & 0x10) != 0 ? 0x8000 : 0x9000;
@@ -287,26 +272,32 @@ void Screen::renderSprites() {
     }
 }
 
+const util::Color& Screen::getColor(int i) {
+    switch (i) {
+        case 0:
+            return util::Color::GBWHITE;
+        break;
+        case 1:
+            return util::Color::GBLIGHTGRAY;
+        break;
+        case 2:
+            return util::Color::GBDARKGRAY;
+        break;
+        case 3:
+            return util::Color::GBBLACK;
+        break;
+        default:
+            return util::Color::GBWHITE;
+        break;
+    }
+}
+
 void Screen::decodeTile(uint16_t tileAddr, uint8_t palette, bool yFlip, bool xFlip) {
     util::Color colors[4];
 
     for (int i = 0; i < 4; ++i) {
-        switch ((palette >> (i*2)) & 0x3) {
-            case 0:
-                colors[i] = util::Color(255, 255, 255);
-            break;
-            case 1:
-                colors[i] = util::Color(192, 192, 192);
-            break;
-            case 2:
-                colors[i] = util::Color(96, 96, 96);
-            break;
-            case 3:
-                colors[i] = util::Color(0, 0, 0);
-            break;
-        }
+        colors[i] = getColor((palette >> (i*2)) & 0x3);
     }
-    spColorNull = colors[0];
 
     for (int h = 0; h < 8; ++h) {
         uint8_t lsBits = memory->read(tileAddr+(h*2));

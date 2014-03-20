@@ -16,6 +16,11 @@ class Color {
     uint8_t r;
     uint8_t g;
     uint8_t b;
+
+    const static Color GBWHITE;
+    const static Color GBLIGHTGRAY;
+    const static Color GBDARKGRAY;
+    const static Color GBBLACK;
 };
 }
 
