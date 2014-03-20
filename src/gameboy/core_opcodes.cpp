@@ -367,13 +367,13 @@ void Core::DAA() {
 }
 
 //----------ROTATES AND SHIFTS----------//
-void Core::RRCANCB() { uint8_t lsb = registers->getA() & 0x1; registers->setA((registers->getA() >> 1) | (lsb << 7)); registers->setZeroFlag(registers->getA() == 0); registers->setSubFlag(false); registers->setHalfCarryFlag(false); registers->setCarryFlag(lsb); lastClocks = 1; }
+void Core::RRCANCB() { uint8_t lsb = registers->getA() & 0x1; registers->setA((registers->getA() >> 1) | (lsb << 7)); registers->setZeroFlag(false); registers->setSubFlag(false); registers->setHalfCarryFlag(false); registers->setCarryFlag(lsb); lastClocks = 1; }
 
-void Core::RRANCB() { uint8_t lsb = registers->getA() & 0x01; registers->setA((((registers->getCarryFlag()) ? 0x1 : 0x0) << 7) | (registers->getA() >> 1)); registers->setZeroFlag(registers->getA() == 0); registers->setSubFlag(false); registers->setHalfCarryFlag(false); registers->setCarryFlag(lsb); lastClocks = 1; }
+void Core::RRANCB() { uint8_t lsb = registers->getA() & 0x01; registers->setA((((registers->getCarryFlag()) ? 0x1 : 0x0) << 7) | (registers->getA() >> 1)); registers->setZeroFlag(false); registers->setSubFlag(false); registers->setHalfCarryFlag(false); registers->setCarryFlag(lsb); lastClocks = 1; }
 
-void Core::RLCANCB() { uint8_t msb = registers->getA() & 0x80; registers->setA((registers->getA() << 1) | (msb >> 7)); registers->setZeroFlag(registers->getA() == 0); registers->setSubFlag(false); registers->setHalfCarryFlag(false); registers->setCarryFlag(msb); lastClocks = 1; }
+void Core::RLCANCB() { uint8_t msb = registers->getA() & 0x80; registers->setA((registers->getA() << 1) | (msb >> 7)); registers->setZeroFlag(false); registers->setSubFlag(false); registers->setHalfCarryFlag(false); registers->setCarryFlag(msb); lastClocks = 2; }
 
-void Core::RLANCB() { uint8_t carry = registers->getCarryFlag() ? 0x01 : 0x00; uint8_t msb = registers->getA() & 0x80; registers->setA((registers->getA() << 1) | carry); registers->setZeroFlag(registers->getA() == 0); registers->setSubFlag(false); registers->setHalfCarryFlag(false); registers->setCarryFlag(msb); lastClocks = 1; }
+void Core::RLANCB() { uint8_t carry = registers->getCarryFlag() ? 0x01 : 0x00; uint8_t msb = registers->getA() & 0x80; registers->setA((registers->getA() << 1) | carry); registers->setZeroFlag(false); registers->setSubFlag(false); registers->setHalfCarryFlag(false); registers->setCarryFlag(msb); lastClocks = 1; }
 
 // ||===============================================||
 // ||======================CB=======================||
@@ -390,7 +390,7 @@ void Core::SWAPrL() { uint8_t n = registers->getL(); registers->setL(((n & 0x0F)
 void Core::SWAPrHLm() { uint8_t n = memory->read(registers->getHL()); memory->write(registers->getHL(), (((n & 0x0F) << 4) | ((n & 0xF0) >> 4))); registers->setZeroFlag(memory->read(registers->getHL()) == 0); registers->setSubFlag(false); registers->setHalfCarryFlag(false); registers->setCarryFlag(false); lastClocks = 4; }
 
 //----------ROTATES AND SHIFTS----------//
-void Core::RLCA() { uint8_t msb = registers->getA() & 0x80; registers->setA((registers->getB() << 1) | (msb >> 7)); registers->setZeroFlag(registers->getA() == 0); registers->setSubFlag(false); registers->setHalfCarryFlag(false); registers->setCarryFlag(msb); lastClocks = 2; }
+void Core::RLCA() { uint8_t msb = registers->getA() & 0x80; registers->setA((registers->getA() << 1) | (msb >> 7)); registers->setZeroFlag(registers->getA() == 0); registers->setSubFlag(false); registers->setHalfCarryFlag(false); registers->setCarryFlag(msb); lastClocks = 2; }
 void Core::RLCB() { uint8_t msb = registers->getB() & 0x80; registers->setB((registers->getB() << 1) | (msb >> 7)); registers->setZeroFlag(registers->getB() == 0); registers->setSubFlag(false); registers->setHalfCarryFlag(false); registers->setCarryFlag(msb); lastClocks = 2; }
 void Core::RLCC() { uint8_t msb = registers->getC() & 0x80; registers->setC((registers->getC() << 1) | (msb >> 7)); registers->setZeroFlag(registers->getC() == 0); registers->setSubFlag(false); registers->setHalfCarryFlag(false); registers->setCarryFlag(msb); lastClocks = 2; }
 void Core::RLCD() { uint8_t msb = registers->getD() & 0x80; registers->setD((registers->getD() << 1) | (msb >> 7)); registers->setZeroFlag(registers->getD() == 0); registers->setSubFlag(false); registers->setHalfCarryFlag(false); registers->setCarryFlag(msb); lastClocks = 2; }
