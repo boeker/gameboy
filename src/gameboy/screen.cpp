@@ -170,9 +170,9 @@ void Screen::renderBackground() {
     }
 
     //Bit 4 - BG & Window Tile Data Select
-    uint16_t tileSet = (memory->read(0xFF40) & 0x10) != 0 ? 0x8000 : 0x9000;
+    uint16_t tileSet = (memory->read(0xFF40) & 0x10) ? 0x8000 : 0x9000;
     //Bit 3 - BG Tile Map Display Select
-    uint16_t tileMap = (memory->read(0xFF40) & 0x8) != 0 ? 0x9C00 : 0x9800;
+    uint16_t tileMap = (memory->read(0xFF40) & 0x08) ? 0x9C00 : 0x9800;
 
     //Render the whole map
     if (tileSet == 0x8000) {
