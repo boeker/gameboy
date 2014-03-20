@@ -112,7 +112,7 @@ const Core::opCode Core::opCodesCB[] = {
     &Core::BIT1H,    &Core::BIT1L,    &Core::BIT1HL,   &Core::BIT1A,
     //CB50
     &Core::BIT2B,    &Core::BIT2C,    &Core::BIT2D,    &Core::BIT2E,
-    &Core::BIT2H,    &Core::BIT2L,    &Core::BIT2L,    &Core::BIT2A,
+    &Core::BIT2H,    &Core::BIT2L,    &Core::BIT2HL,    &Core::BIT2A,
     &Core::BIT3B,    &Core::BIT3C,    &Core::BIT3D,    &Core::BIT3E,
     &Core::BIT3H,    &Core::BIT3L,    &Core::BIT3HL,   &Core::BIT3A,
     //CB60
