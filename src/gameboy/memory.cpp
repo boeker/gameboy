@@ -3,7 +3,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
-#include <fstream>
+#include <QDebug>
 
 namespace gameboy {
 Memory::Memory() {
@@ -125,6 +125,15 @@ uint8_t Memory::read(uint16_t address) {
 }
 
 void Memory::write(uint16_t address, uint8_t value) {
+    if (address >= 0x2000 && address <= 0x3FFF) {
+        // TODO SELECT ROM BANK
+        return;
+    }
+    if (address >= 0x4000 && address <= 0x5FFF) {
+        // TODO SELECT RAM BANK
+        return;
+    }
+
     uint8_t *memLoc = resolveAddress(address);
     *memLoc = value;
 
