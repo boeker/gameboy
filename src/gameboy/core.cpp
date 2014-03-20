@@ -9,6 +9,7 @@
 #include "keyboard.h"
 #include "memory.h"
 #include "screen.h"
+#include "timer.h"
 
 namespace gameboy {
 Core::Core() :
@@ -16,6 +17,7 @@ Core::Core() :
     memory(new Memory),
     breakpoint(0),
     screen(new Screen(memory)),
+    timer(new Timer(memory)),
     keyboard(new Keyboard),
     lastClocks(0),
     clock(0) {
@@ -54,7 +56,7 @@ bool Core::drawFlagSet() {
 
 void Core::emulateCycle() {
     uint8_t interrupt = memory->read(0xFF0F) & memory->read(0xFFFF) & 0x1F;
-    if (registers->getIME() && interrupt) {
+    if ((registers->getIME()) && interrupt) {
         if (interrupt & 0x01) { // V-BLANK
             memory->write(0xFF0F, memory->read(0xFF0F) & 0xFE); // Disable Flag
             INT40();
@@ -77,6 +79,7 @@ void Core::emulateCycle() {
 
     clock += lastClocks;
     screen->step(lastClocks);
+    timer->step(lastClocks);
     updateKeyRegister();
 }
 

@@ -42,6 +42,7 @@ class Memory {
 
     uint8_t read(uint16_t address);
     void write(uint16_t address, uint8_t value);
+    void writeRaw(uint16_t address, uint8_t value);
     uint16_t readW(uint16_t address);
     void writeW(uint16_t address, uint16_t value);
 

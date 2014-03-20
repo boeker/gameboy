@@ -323,8 +323,12 @@ void Core::NOP() { lastClocks = 1; }
 void Core::DI() { registers->setIME(false); lastClocks = 1; }
 void Core::EI() { registers->setIME(true); lastClocks = 1; }
 
+void Core::HALT() { uint8_t interrupt = memory->read(0xFF0F) & memory->read(0xFFFF) & 0x1F; if (!interrupt) { --registers->pc; } lastClocks = 1; }
+
 void Core::STOP() {
     // TODO
+    ++registers->pc;
+    lastClocks = 1;
 }
 
 void Core::SCF() { registers->setSubFlag(false); registers->setHalfCarryFlag(false); registers->setCarryFlag(true); lastClocks = 1; }

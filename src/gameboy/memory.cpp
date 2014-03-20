@@ -135,6 +135,15 @@ void Memory::write(uint16_t address, uint8_t value) {
             write(0xFE00+i, read(startAddr+i));
         }
     }
+    // FF04 - Divider Timer - Resets to 0 whenever written to
+    if (address == 0xFF04) {
+        *memLoc = 0;
+    }
+}
+
+void Memory::writeRaw(uint16_t address, uint8_t value) {
+    uint8_t *memLoc = resolveAddress(address);
+    *memLoc = value;
 }
 
 uint16_t Memory::readW(uint16_t address) {

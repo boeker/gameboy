@@ -39,7 +39,7 @@ const Core::opCode Core::opCodes[] = {
     &Core::LDrrLH,   &Core::LDrrLL,   &Core::LDrHLML,  &Core::LDrrLA,
     //70
     &Core::LDHLMrB,  &Core::LDHLMrC,  &Core::LDHLMrD,  &Core::LDHLMrE,
-    &Core::LDHLMrH,  &Core::LDHLMrL,  &Core::xx,       &Core::LDHLMrA,
+    &Core::LDHLMrH,  &Core::LDHLMrL,  &Core::HALT,     &Core::LDHLMrA,
     &Core::LDrrAB,   &Core::LDrrAC,   &Core::LDrrAD,   &Core::LDrrAE,
     &Core::LDrrAH,   &Core::LDrrAL,   &Core::LDrHLMA,  &Core::LDrrAA,
     //80

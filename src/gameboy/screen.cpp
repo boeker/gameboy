@@ -4,6 +4,7 @@
 #include <cstring>
 #include <ctime>
 #include <QDebug>
+#include "memory.h"
 
 namespace gameboy {
 Screen::Screen(Memory *memory) :

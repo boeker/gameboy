@@ -14,6 +14,7 @@ class CPURegisters;
 class Keyboard;
 class Memory;
 class Screen;
+class Timer;
 }
 
 namespace gameboy {
@@ -42,6 +43,7 @@ class Core {
 
  private:
     Screen *screen;
+    Timer *timer;
     Keyboard *keyboard;
 
     unsigned int lastClocks;
@@ -291,6 +293,7 @@ class Core {
     void NOP();
     void DI();
     void EI();
+    void HALT();
     void STOP();
     void SCF();
     void CCF();

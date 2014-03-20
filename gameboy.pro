@@ -13,6 +13,7 @@ HEADERS += src/gui/mainwindow.h \
            src/gameboy/keyboard.h \
            src/gameboy/memory.h \
            src/gameboy/screen.h \
+           src/gameboy/timer.h \
            src/util/color.h
 SOURCES += src/main.cpp \
            src/gui/mainwindow.cpp \
@@ -26,6 +27,7 @@ SOURCES += src/main.cpp \
            src/gameboy/keyboard.cpp \
            src/gameboy/memory.cpp \
            src/gameboy/screen.cpp \
+           src/gameboy/timer.cpp \
            src/util/color.cpp
 FORMS += src/gui/mainwindow.ui \
          src/gui/debuggerwindow.ui

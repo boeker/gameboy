@@ -2,8 +2,12 @@
 #define GAMEBOY_SCREEN_H
 
 #include <cinttypes>
+
 #include "util/color.h"
-#include "memory.h"
+
+namespace gameboy {
+class Memory;
+}
 
 namespace gameboy {
 class Screen {
