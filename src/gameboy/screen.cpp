@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
+#include <QDebug>
 #include "memory.h"
 
 namespace gameboy {
@@ -175,37 +176,23 @@ void Screen::renderBackground() {
     uint16_t tileMap = (memory->read(0xFF40) & 0x08) ? 0x9C00 : 0x9800;
 
     //Render the whole map
-    if (tileSet == 0x8000) {
-        uint8_t num;
-        for (int y = 0; y < 32; ++y) {
-            for (int x = 0; x < 32; ++x) {
-                num = memory->read(tileMap+y*32+x);
-                for (int h = 0; h < 8; ++h) {
-                    uint8_t lsBits = memory->read(tileSet+num*16+(h*2));
-                    uint8_t msBits = memory->read(tileSet+num*16+(h*2)+1);
-                    for (int i = 0; i < 8; ++i) {
-                        uint8_t lsb = (lsBits >> (7-i)) & 0x1;
-                        uint8_t msb = (msBits >> (7-i)) & 0x1;
-                        uint8_t col = (msb << 1) | lsb;
-                        mapFrameBuffer[y*8+h][x*8+i] = colors[col];
-                    }
-                }
-            }
-        }
-    } else {
-        int8_t num;
-        for (int y = 0; y < 32; ++y) {
-            for (int x = 0; x < 32; ++x) {
+    for (int y = 0; y < 32; ++y) {
+        for (int x = 0; x < 32; ++x) {
+            int num;
+            if (tileSet == 0x8000) {
+                num = (uint8_t)memory->read(tileMap+y*32+x);
+            } else {
                 num = (int8_t)memory->read(tileMap+y*32+x);
-                for (int h = 0; h < 8; ++h) {
-                    uint8_t lsBits = memory->read(tileSet+num*16+(h*2));
-                    uint8_t msBits = memory->read(tileSet+num*16+(h*2)+1);
-                    for (int i = 0; i < 8; ++i) {
-                        uint8_t lsb = (lsBits >> (7-i)) & 0x1;
-                        uint8_t msb = (msBits >> (7-i)) & 0x1;
-                        uint8_t col = (msb << 1) | lsb;
-                        mapFrameBuffer[y*8+h][x*8+i] = colors[col];
-                    }
+            }
+            num = memory->read(tileMap+y*32+x);
+            for (int h = 0; h < 8; ++h) {
+                uint8_t lsBits = memory->read(tileSet+num*16+(h*2));
+                uint8_t msBits = memory->read(tileSet+num*16+(h*2)+1);
+                for (int i = 0; i < 8; ++i) {
+                    uint8_t lsb = (lsBits >> (7-i)) & 0x1;
+                    uint8_t msb = (msBits >> (7-i)) & 0x1;
+                    uint8_t col = (msb << 1) | lsb;
+                    mapFrameBuffer[y*8+h][x*8+i] = colors[col];
                 }
             }
         }
