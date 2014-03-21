@@ -1,7 +1,7 @@
 #include "debuggerwindow.h"
 
 #include "ui_debuggerwindow.h"
-#include <QCheckbox>
+#include <QCheckBox>
 #include <QDebug>
 #include <QPalette>
 #include "mainwindow.h"
