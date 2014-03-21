@@ -139,7 +139,7 @@ void MainWindow::scale6x() {
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event) {
-    if (!debuggerWindow->controlsOverridden()) {
+    if (debuggerWindow && !debuggerWindow->controlsOverridden()) {
         switch (event->key()) {
         case Qt::Key_Up:
             keyboard->up = true;
@@ -172,7 +172,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event) {
 }
 
 void MainWindow::keyReleaseEvent(QKeyEvent *event) {
-    if (!debuggerWindow->controlsOverridden()) {
+    if (debuggerWindow && !debuggerWindow->controlsOverridden()) {
         switch (event->key()) {
             case Qt::Key_Up:
                 keyboard->up = false;
