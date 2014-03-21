@@ -61,6 +61,18 @@ void MainWindow::setScaling(int scaling) {
     resize(160*scaling, 144*scaling + ui->menubar->height());
 }
 
+void MainWindow::loadROM(const QString &file) {
+    currentROM = file;
+
+    pauseEmulation();
+
+    gameboyCore->reset();
+    gameboyCore->loadROM(file.toStdString());
+
+    ui->actionReset->setEnabled(true);
+    continueEmulation();
+}
+
 void MainWindow::debugger() {
     pauseEmulation();
 
@@ -97,13 +109,17 @@ void MainWindow::loadROM() {
     }
 }
 
-void MainWindow::loadROM(const QString &file) {
+void MainWindow::reset() {
+    bool wasRunning = emuThread->isRunning();
+
     pauseEmulation();
 
     gameboyCore->reset();
-    gameboyCore->loadROM(file.toStdString());
+    gameboyCore->loadROM(currentROM.toStdString());
 
-    //continueEmulation();
+    if (wasRunning) {
+        continueEmulation();
+    }
 }
 
 void MainWindow::scale1x() {

@@ -27,13 +27,14 @@ class MainWindow : public QMainWindow {
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     void setScaling(int scaling);
+    void loadROM(const QString &file);
 
  public slots:
     void debugger();
     void continueEmulation();
     void pauseEmulation();
     void loadROM();
-    void loadROM(const QString &file);
+    void reset();
     void scale1x();
     void scale2x();
     void scale4x();
@@ -56,6 +57,8 @@ class MainWindow : public QMainWindow {
     QActionGroup *videoScalingGroup;
 
     DebuggerWindow *debuggerWindow;
+
+    QString currentROM;
 };
 
 #endif

@@ -45,6 +45,7 @@
     <addaction name="actionOpen"/>
     <addaction name="actionContinue"/>
     <addaction name="actionPause"/>
+    <addaction name="actionReset"/>
    </widget>
    <widget class="QMenu" name="menuOptions">
     <property name="title">
@@ -138,6 +139,14 @@
   <action name="actionDebugger">
    <property name="text">
     <string>Debugger</string>
+   </property>
+  </action>
+  <action name="actionReset">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Reset</string>
    </property>
   </action>
  </widget>
@@ -271,6 +280,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionReset</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>reset()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>174</x>
+     <y>166</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>scale1x()</slot>
@@ -281,5 +306,6 @@
   <slot>continueEmulation()</slot>
   <slot>pauseEmulation()</slot>
   <slot>debugger()</slot>
+  <slot>reset()</slot>
  </slots>
 </ui>
