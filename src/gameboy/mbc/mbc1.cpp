@@ -11,6 +11,11 @@ MBC1::MBC1(uint8_t **romBanks, uint8_t num) :
 
 MBC1::~MBC1() {
     delete[] ram;
+    
+    for (int i = 0; i < numOfROMBanks; ++i) {
+        delete[] romBanks[i];
+    }
+    delete[] romBanks;
 }
 
 uint8_t* MBC1::getExternalRAM() {
