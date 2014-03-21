@@ -4,6 +4,9 @@
 #include <cstdlib>
 #include <cstring>
 #include <QDebug>
+#include "mbc/memorybankcontroller.h"
+#include "mbc/romonly.h"
+#include "mbc/mbc1.h"
 
 namespace gameboy {
 Memory::Memory() {
@@ -12,11 +15,9 @@ Memory::Memory() {
     ioPorts = new uint8_t[224];
     spriteAttTab = new uint8_t[160];
     internalRam = new uint8_t[8192];
-    externalRam = new uint8_t[8192];
     videoRam = new uint8_t[8192];
-    romBank0 = new uint8_t[16384];
-
-    numOfAddBanks = -1;
+    rom = new uint8_t[16384];
+    mbc = 0;
 
     reset();
 }
@@ -27,29 +28,22 @@ Memory::~Memory() {
     delete[] ioPorts;
     delete[] spriteAttTab;
     delete[] internalRam;
-    delete[] externalRam;
     delete[] videoRam;
-    delete[] romBank0;
-    if (numOfAddBanks != -1) {
-        for (int i = 0; i < numOfAddBanks; ++i) {
-            delete[] romBanks[i];
-        }
-        numOfAddBanks = -1;
+    delete[] rom;
+
+    if (mbc) {
+        delete mbc;
     }
-    delete[] romBanks;
 }
 
 void Memory::reset() {
-    selectedAddBank = 0;
-
     *ieReg = 0;
     memset(highRam, 0, 127);
     memset(ioPorts, 0, 224);
     memset(spriteAttTab, 0, 160);
     memset(internalRam, 0, 8192);
-    memset(externalRam, 0, 8192);
     memset(videoRam, 0, 8192);
-    memset(romBank0, 0, 16384);
+    memset(rom, 0, 16384);
 
     writeRaw(0xFF05, 0x00);
     writeRaw(0xFF06, 0x00);
@@ -83,11 +77,9 @@ void Memory::reset() {
     writeRaw(0xFF4B, 0x00);
     writeRaw(0xFFFF, 0x00);
 
-    if (numOfAddBanks != -1) {
-        for (int i = 0; i < numOfAddBanks; ++i) {
-            delete[] romBanks[i];
-        }
-        numOfAddBanks = -1;
+    if (mbc) {
+        delete mbc;
+        mbc = 0;
     }
 }
 
@@ -96,27 +88,48 @@ void Memory::loadROM(const std::string &file) {
     if (!cartridge.good()) {
         exit(1);
     }
-    cartridge.read(reinterpret_cast<char*>(romBank0), 16384);
-    int romSize = romBank0[0x0148];
+    cartridge.read(reinterpret_cast<char*>(rom), 16384);
+
+    uint8_t romSize = rom[0x0148];
+    uint16_t addBanks;
     switch (romSize) {
         case 0x52:
-            numOfAddBanks = 72-1;
+            addBanks = 72-1;
         break;
         case 0x53:
-            numOfAddBanks = 80-1;
+            addBanks = 80-1;
         break;
         case 0x54:
-            numOfAddBanks = 96-1;
+            addBanks = 96-1;
         break;
         default:
-            numOfAddBanks = pow(2, romSize+1)-1;
+            addBanks = pow(2, romSize+1)-1;
         break;
     }
-    romBanks = new uint8_t*[numOfAddBanks];
-    for (int i = 0; i < numOfAddBanks; ++i) {
+
+    uint8_t** romBanks = new uint8_t*[addBanks];
+    for (int i = 0; i < addBanks; ++i) {
         romBanks[i] = new uint8_t[16384];
         cartridge.read(reinterpret_cast<char*>(romBanks[i]), 16384);
     }
+
+    uint8_t cartridgeType = rom[0x0147];
+    switch (cartridgeType) {
+        case 0x00: // ROM only
+            mbc = new mbc::ROMOnly(romBanks[0]);
+            delete[] romBanks;
+        break;
+        case 0x01: // MBC1
+            mbc = new mbc::MBC1(romBanks, addBanks);
+        break;
+        default:
+            qDebug() << "Unknown cartridge type " << cartridgeType;
+            exit(1);
+        break;
+    }
+
+    romBank = mbc->getROMBank();
+    externalRam = mbc->getExternalRAM();
 }
 
 uint8_t Memory::read(uint16_t address) {
@@ -125,12 +138,11 @@ uint8_t Memory::read(uint16_t address) {
 }
 
 void Memory::write(uint16_t address, uint8_t value) {
-    if (address >= 0x2000 && address <= 0x3FFF) {
-        // TODO SELECT ROM BANK
-        return;
-    }
-    if (address >= 0x4000 && address <= 0x5FFF) {
-        // TODO SELECT RAM BANK
+    if (address <= 0x7FFF) {
+        mbc->write(address, value);
+        romBank = mbc->getROMBank();
+        externalRam = mbc->getExternalRAM();
+
         return;
     }
 
@@ -164,36 +176,12 @@ void Memory::writeW(uint16_t address, uint16_t value) {
     write(address+1, (value & 0xFF00) >> 8);
 }
 
-void Memory::dumpCartridgeToFile(const std::string &file) {
-    std::ofstream cartridge(file, std::ios::binary);
-    cartridge.write((const char*)romBank0, 16384);
-    for (int i = 0; i < numOfAddBanks; ++i) {
-        cartridge.write((const char*)romBanks[i], 16384);
-    }
-}
-
-void Memory::dumpToFile(const std::string &file) {
-    std::ofstream cartridge(file, std::ios::binary);
-    cartridge.write((const char*)romBank0, 16384);
-    for (int i = 0; i < numOfAddBanks; ++i) {
-        cartridge.write((const char*)romBanks[i], 16384);
-    }
-    cartridge.write((const char*)videoRam, 8192);
-    cartridge.write((const char*)externalRam, 8192);
-    cartridge.write((const char*)internalRam, 8192);
-    cartridge.write((const char*)internalRam, 7680);
-    cartridge.write((const char*)spriteAttTab, 160);
-    cartridge.write((const char*)ioPorts, 224);
-    cartridge.write((const char*)highRam, 127);
-    cartridge.write((const char*)ieReg, 1);
-}
-
 uint8_t* Memory::resolveAddress(uint16_t address) {
     if (address <= 0x3FFF) {
-        return romBank0 + address;
+        return rom + address;
     }
     if ((address >= 0x4000) && (address <= 0x7FFF)) {
-        return romBanks[selectedAddBank] + address - 0x4000;
+        return romBank + address - 0x4000;
     }
     if ((address >= 0x8000) && (address <= 0x9FFF)) {
         return videoRam + address - 0x8000;

@@ -33,6 +33,12 @@ Echo of 8kB Internal RAM
 */
 
 namespace gameboy {
+namespace mbc {
+class MemoryBankController;
+}
+}
+
+namespace gameboy {
 class Memory {
  public:
     explicit Memory();
@@ -46,9 +52,6 @@ class Memory {
     uint16_t readW(uint16_t address);
     void writeW(uint16_t address, uint16_t value);
 
-    void dumpCartridgeToFile(const std::string &file);
-    void dumpToFile(const std::string &file);
-
  private:
     uint8_t* resolveAddress(uint16_t address);
 
@@ -59,14 +62,13 @@ class Memory {
     uint8_t *spriteAttTab;  // FE00-FE9F, 160 bytes
     uint8_t *internalRam;   // C000-DFFF, 8192 bytes
                             // E000-FDFF (7680 bytes) are echoed to this
-    uint8_t *externalRam;   // A000-BFFF, 8192 bytes, switchable?
+    uint8_t *externalRam;   // A000-BFFF, 8192 bytes
     uint8_t *videoRam;      // 8000-9FFF, 8192 bytes
-    uint8_t **romBanks;     // 4000-7FFF, switchable
+    uint8_t *romBank;       // 4000-7FFF, switchable
                             // at least 1x16384 bytes
-    uint8_t *romBank0;      // 0000-3FFF, 16384 bytes
+    uint8_t *rom;           // 0000-3FFF, 16384 bytes
 
-    int numOfAddBanks;
-    int selectedAddBank;
+    mbc::MemoryBankController *mbc;
 };
 }
 
