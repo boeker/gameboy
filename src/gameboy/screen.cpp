@@ -170,10 +170,10 @@ void Screen::renderBackground() {
     uint8_t scrollY = memory->read(0xFF42);
 
     uint16_t tileRow = ((scrollY + line) % 0xFF) / 8;
-    uint16_t inTileY = (scrollY + line) % 8;
+    uint16_t inTileY = ((scrollY + line) % 0xFF) % 8;
     for (int x = 0; x < 160; ++x) {
         uint16_t tileColumn = ((scrollX + x) % 0xFF) / 8;
-        uint16_t inTileX = (scrollX + x) % 8;
+        uint16_t inTileX = ((scrollX + x) % 0xFF) % 8;
 
         framebuffer[line*160+x] = colors[readBGTile(tileSet, tileMap+tileRow*32+tileColumn, inTileX, inTileY)];
     }
