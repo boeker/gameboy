@@ -10,10 +10,7 @@ namespace gameboy {
 Screen::Screen(Memory *memory) :
     memory(memory) {
     framebuffer = new util::Color[160 * 144];
-    mapFrameBuffer = new util::Color*[256];
-    for (int i = 0; i < 256; ++i) {
-        mapFrameBuffer[i] = new util::Color[256];
-    }
+
     decodedTile = new util::Color*[8];
     for (int i = 0; i < 8; ++i) {
         decodedTile[i] = new util::Color[8];
@@ -24,10 +21,7 @@ Screen::Screen(Memory *memory) :
 
 Screen::~Screen() {
     delete[] framebuffer;
-    for (int i = 0; i < 256; ++i) {
-        delete[] mapFrameBuffer[i];
-    }
-    delete[] mapFrameBuffer;
+
     for (int i = 0; i < 8; ++i) {
         delete[] decodedTile[i];
     }
@@ -42,11 +36,7 @@ void Screen::reset() {
     for (int i = 0; i < 160*144; ++i) {
         framebuffer[i].set(0xFF, 0xFF, 0xFF);
     }
-    for (int i = 0; i < 256; ++i) {
-        for (int h = 0; h < 256; ++h) {
-            mapFrameBuffer[i][h].set(0xFF, 0xFF, 0xFF);
-        }
-    }
+    
     for (int i = 0; i < 8; ++i) {
         for (int h = 0; h < 8; ++h) {
             decodedTile[i][h].set(0xFF, 0xFF, 0xFF);
@@ -175,35 +165,17 @@ void Screen::renderBackground() {
     //Bit 3 - BG Tile Map Display Select
     uint16_t tileMap = (memory->read(0xFF40) & 0x08) ? 0x9C00 : 0x9800;
 
-    //Render the whole map
-    for (int y = 0; y < 32; ++y) {
-        for (int x = 0; x < 32; ++x) {
-            int num;
-            if (tileSet == 0x8000) {
-                num = (uint8_t)memory->read(tileMap+y*32+x);
-            } else {
-                num = (int8_t)memory->read(tileMap+y*32+x);
-            }
-            num = memory->read(tileMap+y*32+x);
-            for (int h = 0; h < 8; ++h) {
-                uint8_t lsBits = memory->read(tileSet+num*16+(h*2));
-                uint8_t msBits = memory->read(tileSet+num*16+(h*2)+1);
-                for (int i = 0; i < 8; ++i) {
-                    uint8_t lsb = (lsBits >> (7-i)) & 0x1;
-                    uint8_t msb = (msBits >> (7-i)) & 0x1;
-                    uint8_t col = (msb << 1) | lsb;
-                    mapFrameBuffer[y*8+h][x*8+i] = colors[col];
-                }
-            }
-        }
-    }
-
     //coordinates of background to be displayed in the left upper corner
     uint8_t scrollX = memory->read(0xFF43);
     uint8_t scrollY = memory->read(0xFF42);
 
-    for (int i = 0; i < 160; ++i) {
-        framebuffer[line*160+i] = mapFrameBuffer[(scrollY+line) % 0xFF][(scrollX+i) % 0xFF];
+    uint16_t tileRow = ((scrollY + line) % 0xFF) / 8;
+    uint16_t inTileY = (scrollY + line) % 8;
+    for (int x = 0; x < 160; ++x) {
+        uint16_t tileColumn = ((scrollX + x) % 0xFF) / 8;
+        uint16_t inTileX = (scrollX + x) % 8;
+
+        framebuffer[line*160+x] = colors[readBGTile(tileSet, tileMap+tileRow*32+tileColumn, inTileX, inTileY)];
     }
 }
 
@@ -277,6 +249,24 @@ const util::Color& Screen::getColor(int i) {
             return util::Color::GBWHITE;
         break;
     }
+}
+
+uint8_t Screen::readBGTile(uint16_t tileSet, uint16_t tileAddr, uint8_t x, uint8_t y) {
+    int num;
+    if (tileSet == 0x8000) {
+         num = (uint8_t)memory->read(tileAddr);
+    } else {
+        num = (int8_t)memory->read(tileAddr);
+    }
+
+    uint8_t lsBits = memory->read(tileSet+num*16+(y*2));
+    uint8_t msBits = memory->read(tileSet+num*16+(y*2)+1);
+
+    uint8_t lsb = (lsBits >> (7-x)) & 0x1;
+    uint8_t msb = (msBits >> (7-x)) & 0x1;
+    uint8_t col = (msb << 1) | lsb;
+
+    return col;
 }
 
 void Screen::decodeTile(uint16_t tileAddr, uint8_t palette, bool yFlip, bool xFlip) {
