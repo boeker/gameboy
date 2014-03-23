@@ -46,12 +46,15 @@ class Core {
     Timer *timer;
     Keyboard *keyboard;
 
-    unsigned int lastClocks;
+    bool conditional;
     unsigned int clock;
 
     typedef void (Core::*opCode) ();
     static const opCode opCodes[];
     static const opCode opCodesCB[];
+    static const uint8_t opCodeCycles[];
+    static const uint8_t opCodeCondCycles[];
+    static const uint8_t opCodeCBCycles[];
 
  private:
     void LDrnA();

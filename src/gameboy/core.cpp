@@ -18,9 +18,8 @@ Core::Core() :
     breakpoint(0),
     screen(new Screen(memory)),
     timer(new Timer(memory)),
-    keyboard(new Keyboard),
-    lastClocks(0),
-    clock(0) {
+    keyboard(new Keyboard) {
+        reset();
 }
 
 Core::~Core() {
@@ -38,7 +37,7 @@ void Core::reset() {
     registers->reset();
     memory->reset();
     screen->reset();
-    lastClocks = 0;
+    conditional = false;
     clock = 0;
 }
 
@@ -56,6 +55,8 @@ bool Core::drawFlagSet() {
 
 void Core::emulateCycle() {
     uint8_t interrupt = memory->read(0xFF0F) & memory->read(0xFFFF) & 0x1F;
+    uint8_t lastClocks;
+
     if ((registers->getIME()) && interrupt) {
         if (interrupt & 0x01) { // V-BLANK
             memory->write(0xFF0F, memory->read(0xFF0F) & 0xFE); // Disable Flag
@@ -73,8 +74,21 @@ void Core::emulateCycle() {
             memory->write(0xFF0F, memory->read(0xFF0F) & 0xEF); // Disable Flag
             INT60();
         }
+        lastClocks = 3;
     } else {
-        (this->*opCodes[memory->read(registers->pc++)])();
+        uint8_t opCode = memory->read(registers->pc++);
+        uint8_t cb = memory->read(registers->pc);
+
+        (this->*opCodes[opCode])();
+
+        if (opCode == 0xCB) {
+            lastClocks = opCodeCBCycles[cb];
+        } else if (conditional) {
+            conditional = false;
+            lastClocks = opCodeCondCycles[opCode];
+        } else {
+            lastClocks = opCodeCycles[opCode];
+        }
     }
 
     clock += lastClocks;

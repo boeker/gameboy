@@ -26,6 +26,7 @@ SOURCES += src/main.cpp \
            src/gameboy/core.cpp \
            src/gameboy/core_opcodes.cpp \
            src/gameboy/core_opcodetables.cpp \
+           src/gameboy/core_timings.cpp \
            src/gameboy/cpuregisters.cpp \
            src/gameboy/keyboard.cpp \
            src/gameboy/memory.cpp \
