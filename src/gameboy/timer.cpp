@@ -22,7 +22,7 @@ void Timer::reset() {
 void Timer::step(unsigned int lastClocks) {
     clocks += lastClocks;
 
-    if (clocks >= 4) {
+    while (clocks >= 4) {
         main++;
         clocks -= 4;
 
