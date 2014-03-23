@@ -42,6 +42,8 @@ class Screen {
     unsigned int clocks;
     Mode mode;
     util::Color *framebuffer;
+    util::Color bgPalette[4];
+    util::Color spritePalette[4];
     Memory *memory;
 };
 }

@@ -138,10 +138,9 @@ void Screen::renderScanLine() {
 
 void Screen::renderBackground() {
     uint8_t palette = memory->read(0xFF47);
-    util::Color colors[4];
 
     for (int i = 0; i < 4; ++i) {
-        colors[i] = getColor((palette >> (i*2)) & 0x3);
+        bgPalette[i] = getColor((palette >> (i*2)) & 0x3);
     }
 
     //Bit 4 - BG & Window Tile Data Select
@@ -169,7 +168,7 @@ void Screen::renderBackground() {
             num = (int8_t)memory->read(tileNumLocation);
         }
 
-        framebuffer[line*160+x] = colors[readTile(tileSet+num*16, inTileX, inTileY)];
+        framebuffer[line*160+x] = bgPalette[readTile(tileSet+num*16, inTileX, inTileY)];
     }
 }
 
@@ -177,20 +176,20 @@ void Screen::renderSprites() {
     for (int h = 0; h < 40; ++h) {
         uint16_t currentOAMAddr = 0xFE00 + 0x4 * h;
 
-        //Byte0 - Y Position - Vertical position on the screen (minus 16).
+        // Byte 0 - Y Position - Vertical position on the screen (minus 16).
         uint8_t yCoord = memory->read(currentOAMAddr) - 0x10;
-        //Byte1 - X Position - Horizontal position on the screen (minus 8)
+        // Byte 1 - X Position - Horizontal position on the screen (minus 8)
         uint8_t xCoord = memory->read(currentOAMAddr+1) - 0x8;
 
-        //Bit 2 - OBJ (Sprite) Size (0=8x8, 1=8x16)
+        // Bit 2 - OBJ (Sprite) Size (0=8x8, 1=8x16)
         bool largeSprites = memory->read(0xFF40) & 0x4;
 
-        //Check if the sprite is not visible
+        // Check if the sprite is not visible
         if (xCoord >= 160 || yCoord >= 144) {
             continue;
         }
 
-        //Check if it is not on the current line
+        // Check if it is not on the current line
         if (yCoord > line || (line - yCoord) >= (largeSprites ? 16 : 8)) {
             continue;
         }
@@ -201,32 +200,36 @@ void Screen::renderSprites() {
         bool xFlip = optionsByte & 0x20;
         uint8_t palette = memory->read((optionsByte & 0x10) ? 0xFF49 : 0xFF48);
 
-        util::Color colors[4];
-
         for (int i = 0; i < 4; ++i) {
-            colors[i] = getColor((palette >> (i*2)) & 0x3);
+            spritePalette[i] = getColor((palette >> (i*2)) & 0x3);
         }
 
-        uint8_t spriteNum = memory->read(currentOAMAddr+2);
+        // Byte 2 - Pattern number
+        uint8_t spriteNum;
+
         uint16_t tileAddr;
 
-        if (!largeSprites) {
-            tileAddr = 0x8000 + 0x10 * spriteNum;
-        } else {
-            //Check which 8x8 tile has to be used
+        if (largeSprites) {
+            spriteNum = memory->read(currentOAMAddr+2) & 0xFE; // Ignoring LSB
+
+            // Check which 8x8 tile has to be used
             if ((line - yCoord) < 8) {
-                tileAddr = 0x8000 + 0x10 * (spriteNum & 0xFE); //upper
+                tileAddr = 0x8000 + 0x10 * (spriteNum & 0xFE); // upper
             } else {
-                tileAddr = 0x8000 + 0x10 * (spriteNum | 0x01); //lower
+                tileAddr = 0x8000 + 0x10 * (spriteNum | 0x01); // lower
             }
+        } else {
+            spriteNum = memory->read(currentOAMAddr+2);
+
+            tileAddr = 0x8000 + 0x10 * spriteNum;
         }
 
         for (int i = 0; i < 8; ++i) {
             uint8_t y = line - yCoord;
-            uint8_t pixel = readTile(tileAddr, xFlip ? (7-i) : i, yFlip ? (7-y) : y);
+            uint8_t pixel = readTile(tileAddr, xFlip ? (7-i) : i, yFlip ? (7-y) : y); // 0 = transparency
 
-            if ((priority || (framebuffer[line*160+xCoord+i] == util::Color(255, 255, 255))) && !(colors[pixel] == util::Color(255, 255, 255))) {
-                framebuffer[line*160+xCoord+i] = colors[pixel];
+            if (pixel && (priority || (framebuffer[line*160+xCoord+i] == bgPalette[0]))) {
+                framebuffer[line*160+xCoord+i] = spritePalette[pixel];
             }
         }
     }
