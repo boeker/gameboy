@@ -87,7 +87,7 @@ void Screen::step(unsigned int lastClocks) {
         break;
     }
     //FF44 - LY - LCDC Y-Coordinate (R)
-    memory->write(0xFF44, (uint8_t)line);
+    memory->write(0xFF44, static_cast<uint8_t>(line));
 
     // FF41 (STAT)
     uint8_t ff41 = memory->read(0xFF41);
@@ -97,27 +97,27 @@ void Screen::step(unsigned int lastClocks) {
 
         if (ff41 & 0x04) { // LYC = LY Interrupt
             if (ly == lyc) {
-                memory->write(0xFF0F, memory->read(0xFF0F) | 0x02); //Set LCD-STAT Interrupt Flag
+                memory->write(0xFF0F, memory->read(0xFF0F) | 0x02); // Set LCD-STAT Interrupt Flag
             }
         } else { // LYC != LY Interrupt
             if (ly != lyc) {
-                memory->write(0xFF0F, memory->read(0xFF0F) | 0x02); //Set LCD-STAT Interrupt Flag
+                memory->write(0xFF0F, memory->read(0xFF0F) | 0x02); // Set LCD-STAT Interrupt Flag
             } 
         }
     }
     if (ff41 & 0x20) { // Mode 10 = 0x2
         if ((ff41 & 0x3) == 0x2) {
-            memory->write(0xFF0F, memory->read(0xFF0F) | 0x02); //Set LCD-STAT Interrupt Flag
+            memory->write(0xFF0F, memory->read(0xFF0F) | 0x02); // Set LCD-STAT Interrupt Flag
         }
     }
     if (ff41 & 0x10) { // Mode 01 = 0x1
         if ((ff41 & 0x3) == 0x1) {
-            memory->write(0xFF0F, memory->read(0xFF0F) | 0x02); //Set LCD-STAT Interrupt Flag
+            memory->write(0xFF0F, memory->read(0xFF0F) | 0x02); // Set LCD-STAT Interrupt Flag
         }
     }
     if (ff41 & 0x08) { // Mode 00 = 0x0
         if ((ff41 & 0x3) == 0x0) {
-            memory->write(0xFF0F, memory->read(0xFF0F) | 0x02); //Set LCD-STAT Interrupt Flag
+            memory->write(0xFF0F, memory->read(0xFF0F) | 0x02); // Set LCD-STAT Interrupt Flag
         }
     }
 }
@@ -173,9 +173,9 @@ void Screen::renderBackground() {
         uint16_t tileNumLocation = tileMap + tileRow * 32 + tileColumn;
 
         if (tileSet == 0x8000) {
-             num = (uint8_t)memory->read(tileNumLocation);
+             num = static_cast<uint8_t>(memory->read(tileNumLocation));
         } else {
-            num = (int8_t)memory->read(tileNumLocation);
+            num = static_cast<int8_t>(memory->read(tileNumLocation));
         }
 
         framebuffer[line*160+x] = bgPalette[readTile(tileSet+num*16, inTileX, inTileY)];
@@ -195,7 +195,7 @@ void Screen::renderWindow() {
     }
 
     // Check if the window is on the current line
-    if (wndY > (int16_t)line) {
+    if (wndY > static_cast<int16_t>(line)) {
         return;
     }
 
@@ -223,9 +223,9 @@ void Screen::renderWindow() {
         uint16_t tileNumLocation = tileMap + tileRow * 32 + tileColumn;
 
         if (tileSet == 0x8000) {
-             num = (uint8_t)memory->read(tileNumLocation);
+             num = static_cast<uint8_t>(memory->read(tileNumLocation));
         } else {
-            num = (int8_t)memory->read(tileNumLocation);
+            num = static_cast<int8_t>(memory->read(tileNumLocation));
         }
 
         framebuffer[line*160+x] = bgPalette[readTile(tileSet+num*16, inTileX, inTileY)];
@@ -256,7 +256,7 @@ void Screen::renderSprites() {
         uint8_t inTileY = line - yCoord;
 
         // Check if it is not on the current line
-        if (yCoord > (int16_t)line || inTileY >= (largeSprites ? 16 : 8)) {
+        if (yCoord > static_cast<int16_t>(line) || inTileY >= (largeSprites ? 16 : 8)) {
             continue;
         }
 
