@@ -173,24 +173,30 @@ void Screen::renderBackground() {
 }
 
 void Screen::renderSprites() {
-    for (int h = 0; h < 40; ++h) {
+    // Bit 2 - OBJ (Sprite) Size (0=8x8, 1=8x16)
+    bool largeSprites = memory->read(0xFF40) & 0x4;
+
+    for (int h = 39; h >= 0; --h) { // Respect sprite priority
         uint16_t currentOAMAddr = 0xFE00 + 0x4 * h;
 
+        // Top left Corner
         // Byte 0 - Y Position - Vertical position on the screen (minus 16).
-        uint8_t yCoord = memory->read(currentOAMAddr) - 0x10;
+        int16_t yCoord = memory->read(currentOAMAddr) - 0x10;
         // Byte 1 - X Position - Horizontal position on the screen (minus 8)
-        uint8_t xCoord = memory->read(currentOAMAddr+1) - 0x8;
+        int16_t xCoord = memory->read(currentOAMAddr+1) - 0x8;
 
-        // Bit 2 - OBJ (Sprite) Size (0=8x8, 1=8x16)
-        bool largeSprites = memory->read(0xFF40) & 0x4;
-
-        // Check if the sprite is not visible
-        if (xCoord >= 160 || yCoord >= 144) {
+        // Check if the sprite is not on the screen
+        if (xCoord >= 160
+            || xCoord <= -8
+            || yCoord >= 144
+            || yCoord <= -(largeSprites ? 16 : 8)) {
             continue;
         }
 
+        uint8_t inTileY = line - yCoord;
+
         // Check if it is not on the current line
-        if (yCoord > line || (line - yCoord) >= (largeSprites ? 16 : 8)) {
+        if (yCoord > (int16_t)line || inTileY >= (largeSprites ? 16 : 8)) {
             continue;
         }
 
@@ -205,28 +211,33 @@ void Screen::renderSprites() {
         }
 
         // Byte 2 - Pattern number
-        uint8_t spriteNum;
+        uint8_t spriteNum = memory->read(currentOAMAddr+2);
 
+        // Find tile address
         uint16_t tileAddr;
 
         if (largeSprites) {
-            spriteNum = memory->read(currentOAMAddr+2) & 0xFE; // Ignoring LSB
+            if (yFlip) {
+                inTileY = 16 - inTileY;
+            }
 
             // Check which 8x8 tile has to be used
-            if ((line - yCoord) < 8) {
-                tileAddr = 0x8000 + 0x10 * (spriteNum & 0xFE); // upper
+            if (inTileY < 8) {
+                tileAddr = 0x8000 + 0x10 * (spriteNum & 0xFE); // Upper tile, ignore LSB
             } else {
-                tileAddr = 0x8000 + 0x10 * (spriteNum | 0x01); // lower
+                tileAddr = 0x8000 + 0x10 * (spriteNum | 0x01); // Lower tile, set LSB
+                inTileY -= 8;
             }
         } else {
-            spriteNum = memory->read(currentOAMAddr+2);
+            if (yFlip) {
+                inTileY = 8 - inTileY;
+            }
 
             tileAddr = 0x8000 + 0x10 * spriteNum;
         }
 
         for (int i = 0; i < 8; ++i) {
-            uint8_t y = line - yCoord;
-            uint8_t pixel = readTile(tileAddr, xFlip ? (7-i) : i, yFlip ? (7-y) : y); // 0 = transparency
+            uint8_t pixel = readTile(tileAddr, xFlip ? (7-i) : i, inTileY); // 0 = transparency
 
             if (pixel && (priority || (framebuffer[line*160+xCoord+i] == bgPalette[0]))) {
                 framebuffer[line*160+xCoord+i] = spritePalette[pixel];
