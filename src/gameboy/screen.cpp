@@ -11,21 +11,11 @@ Screen::Screen(Memory *memory) :
     memory(memory) {
     framebuffer = new util::Color[160 * 144];
 
-    decodedTile = new util::Color*[8];
-    for (int i = 0; i < 8; ++i) {
-        decodedTile[i] = new util::Color[8];
-    }
-
     reset();
 }
 
 Screen::~Screen() {
     delete[] framebuffer;
-
-    for (int i = 0; i < 8; ++i) {
-        delete[] decodedTile[i];
-    }
-    delete[] decodedTile;
 }
 
 void Screen::reset() {
@@ -35,12 +25,6 @@ void Screen::reset() {
 
     for (int i = 0; i < 160*144; ++i) {
         framebuffer[i].set(0xFF, 0xFF, 0xFF);
-    }
-    
-    for (int i = 0; i < 8; ++i) {
-        for (int h = 0; h < 8; ++h) {
-            decodedTile[i][h].set(0xFF, 0xFF, 0xFF);
-        }
     }
 }
 
@@ -169,13 +153,23 @@ void Screen::renderBackground() {
     uint8_t scrollX = memory->read(0xFF43);
     uint8_t scrollY = memory->read(0xFF42);
 
+    int num;
+
     uint16_t tileRow = ((scrollY + line) % 0xFF) / 8;
     uint16_t inTileY = ((scrollY + line) % 0xFF) % 8;
     for (int x = 0; x < 160; ++x) {
         uint16_t tileColumn = ((scrollX + x) % 0xFF) / 8;
         uint16_t inTileX = ((scrollX + x) % 0xFF) % 8;
 
-        framebuffer[line*160+x] = colors[readBGTile(tileSet, tileMap+tileRow*32+tileColumn, inTileX, inTileY)];
+        uint16_t tileNumLocation = tileMap + tileRow * 32 + tileColumn;
+
+        if (tileSet == 0x8000) {
+             num = (uint8_t)memory->read(tileNumLocation);
+        } else {
+            num = (int8_t)memory->read(tileNumLocation);
+        }
+
+        framebuffer[line*160+x] = colors[readTile(tileSet+num*16, inTileX, inTileY)];
     }
 }
 
@@ -207,6 +201,12 @@ void Screen::renderSprites() {
         bool xFlip = optionsByte & 0x20;
         uint8_t palette = memory->read((optionsByte & 0x10) ? 0xFF49 : 0xFF48);
 
+        util::Color colors[4];
+
+        for (int i = 0; i < 4; ++i) {
+            colors[i] = getColor((palette >> (i*2)) & 0x3);
+        }
+
         uint8_t spriteNum = memory->read(currentOAMAddr+2);
         uint16_t tileAddr;
 
@@ -221,11 +221,12 @@ void Screen::renderSprites() {
             }
         }
 
-        decodeTile(tileAddr, palette, yFlip, xFlip);
-
         for (int i = 0; i < 8; ++i) {
-            if ((priority || (framebuffer[line*160+xCoord+i] == util::Color(255, 255, 255))) && !(decodedTile[line-yCoord][i] == util::Color(255, 255, 255))) {
-                framebuffer[line*160+xCoord+i] = decodedTile[line-yCoord][i];
+            uint8_t y = line - yCoord;
+            uint8_t pixel = readTile(tileAddr, xFlip ? (7-i) : i, yFlip ? (7-y) : y);
+
+            if ((priority || (framebuffer[line*160+xCoord+i] == util::Color(255, 255, 255))) && !(colors[pixel] == util::Color(255, 255, 255))) {
+                framebuffer[line*160+xCoord+i] = colors[pixel];
             }
         }
     }
@@ -251,40 +252,14 @@ const util::Color& Screen::getColor(int i) {
     }
 }
 
-uint8_t Screen::readBGTile(uint16_t tileSet, uint16_t tileAddr, uint8_t x, uint8_t y) {
-    int num;
-    if (tileSet == 0x8000) {
-         num = (uint8_t)memory->read(tileAddr);
-    } else {
-        num = (int8_t)memory->read(tileAddr);
-    }
-
-    uint8_t lsBits = memory->read(tileSet+num*16+(y*2));
-    uint8_t msBits = memory->read(tileSet+num*16+(y*2)+1);
+uint8_t Screen::readTile(uint16_t address, uint8_t x, uint8_t y) {
+    uint8_t lsBits = memory->read(address+(y*2));
+    uint8_t msBits = memory->read(address+(y*2)+1);
 
     uint8_t lsb = (lsBits >> (7-x)) & 0x1;
     uint8_t msb = (msBits >> (7-x)) & 0x1;
     uint8_t col = (msb << 1) | lsb;
 
     return col;
-}
-
-void Screen::decodeTile(uint16_t tileAddr, uint8_t palette, bool yFlip, bool xFlip) {
-    util::Color colors[4];
-
-    for (int i = 0; i < 4; ++i) {
-        colors[i] = getColor((palette >> (i*2)) & 0x3);
-    }
-
-    for (int h = 0; h < 8; ++h) {
-        uint8_t lsBits = memory->read(tileAddr+(h*2));
-        uint8_t msBits = memory->read(tileAddr+(h*2)+1);
-        for (int i = 0; i < 8; ++i) {
-            uint8_t lsb = (lsBits >> (7-i)) & 0x1;
-            uint8_t msb = (msBits >> (7-i)) & 0x1;
-            uint8_t col = (msb << 1) | lsb;
-            decodedTile[yFlip ? 7-h : h][xFlip ? 7-i : i] = colors[col];
-        }
-    }
 }
 }

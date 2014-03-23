@@ -28,9 +28,7 @@ class Screen {
     void renderSprites();
 
     const util::Color& getColor(int i);
-    uint8_t readBGTile(uint16_t tileSet, uint16_t tileAddr, uint8_t x, uint8_t y);
-    void decodeTile(uint16_t tileAddr, uint8_t palette,
-                    bool yFlip, bool xFlip);
+    uint8_t readTile(uint16_t address, uint8_t x, uint8_t y);
 
     enum Mode {
         OAM,
@@ -44,7 +42,6 @@ class Screen {
     unsigned int clocks;
     Mode mode;
     util::Color *framebuffer;
-    util::Color **decodedTile;
     Memory *memory;
 };
 }
