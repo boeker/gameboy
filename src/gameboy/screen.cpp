@@ -296,11 +296,15 @@ void Screen::renderSprites() {
             tileAddr = 0x8000 + 0x10 * spriteNum;
         }
 
-        for (int i = 0; i < 8; ++i) {
-            uint8_t pixel = readTile(tileAddr, xFlip ? (7-i) : i, inTileY); // 0 = transparency
+        for (int x = 0; x < 8; ++x) {
+            if (xCoord + x < 0 || xCoord + x >= 160) {
+                continue;
+            }
 
-            if (pixel && (priority || (framebuffer[line*160+xCoord+i] == bgPalette[0]))) {
-                framebuffer[line*160+xCoord+i] = spritePalette[pixel];
+            uint8_t pixel = readTile(tileAddr, xFlip ? (7-x) : x, inTileY); // 0 = transparency
+
+            if (pixel && (priority || (framebuffer[line*160+xCoord+x] == bgPalette[0]))) {
+                framebuffer[line*160+xCoord+x] = spritePalette[pixel];
             }
         }
     }
