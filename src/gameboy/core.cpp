@@ -55,7 +55,11 @@ bool Core::drawFlagSet() {
 
 void Core::emulateCycle() {
     uint8_t interrupt = memory->read(0xFF0F) & memory->read(0xFFFF) & 0x1F;
-    uint8_t lastClocks;
+    uint8_t lastClocks = 0;
+
+    if (interrupt && memory->read(registers->pc) == 0x76) { // HALT
+        registers->pc++;
+    }
 
     if ((registers->getIME()) && interrupt) {
         if (interrupt & 0x01) { // V-BLANK

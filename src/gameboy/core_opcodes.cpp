@@ -323,7 +323,7 @@ void Core::NOP() { }
 void Core::DI() { registers->setIME(false); }
 void Core::EI() { registers->setIME(true); }
 
-void Core::HALT() { uint8_t interrupt = memory->read(0xFF0F) & memory->read(0xFFFF) & 0x1F; if (!interrupt) { --registers->pc; } }
+void Core::HALT() { --registers->pc; }
 
 void Core::STOP() {
     // TODO
