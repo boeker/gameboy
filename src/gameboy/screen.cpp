@@ -218,7 +218,7 @@ void Screen::renderSprites() {
 
         if (largeSprites) {
             if (yFlip) {
-                inTileY = 16 - inTileY;
+                inTileY = 15 - inTileY;
             }
 
             // Check which 8x8 tile has to be used
@@ -230,7 +230,7 @@ void Screen::renderSprites() {
             }
         } else {
             if (yFlip) {
-                inTileY = 8 - inTileY;
+                inTileY = 7 - inTileY;
             }
 
             tileAddr = 0x8000 + 0x10 * spriteNum;
