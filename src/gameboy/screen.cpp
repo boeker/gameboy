@@ -123,14 +123,23 @@ void Screen::step(unsigned int lastClocks) {
 }
 
 void Screen::renderScanLine() {
-    //Bit 7 - LCD Display Enable (0=Off, 1=On)
-    if (memory->read(0xFF40) & 0x80) {
-        //Bit 0 - BG Display (0=Off, 1=On)
-        if (memory->read(0xFF40) & 0x01) {
+    // FF40 - LCDC - LCD Control
+    uint8_t lcdc = memory->read(0xFF40);
+
+    // Bit 7 - LCD Display Enable (0=Off, 1=On)
+    if (lcdc & 0x80) {
+        // Bit 0 - BG Display (0=Off, 1=On)
+        if (lcdc & 0x01) {
             renderBackground();
         }
-        //Bit 1 - OBJ (Sprite) Display Enable (0=Off, 1=On)
-        if (memory->read(0xFF40) & 0x02) {
+
+        // Bit 5 - Window Display Enable (0=Off, 1=On)
+        if (lcdc & 0x20) {
+            renderWindow();
+        }
+
+        // Bit 1 - OBJ (Sprite) Display Enable (0=Off, 1=On)
+        if (lcdc & 0x02) {
             renderSprites();
         }
     }
@@ -143,22 +152,73 @@ void Screen::renderBackground() {
         bgPalette[i] = getColor((palette >> (i*2)) & 0x3);
     }
 
-    //Bit 4 - BG & Window Tile Data Select
-    uint16_t tileSet = (memory->read(0xFF40) & 0x10) ? 0x8000 : 0x9000;
-    //Bit 3 - BG Tile Map Display Select
-    uint16_t tileMap = (memory->read(0xFF40) & 0x08) ? 0x9C00 : 0x9800;
+    // FF40 - LCDC - LCD Control
+    uint8_t lcdc = memory->read(0xFF40);
+    // Bit 4 - BG & Window Tile Data Select
+    uint16_t tileSet = (lcdc & 0x10) ? 0x8000 : 0x9000;
+    // Bit 3 - BG Tile Map Display Select
+    uint16_t tileMap = (lcdc & 0x08) ? 0x9C00 : 0x9800;
 
-    //coordinates of background to be displayed in the left upper corner
+    // Coordinates of background to be displayed in the left upper corner
     uint8_t scrollX = memory->read(0xFF43);
     uint8_t scrollY = memory->read(0xFF42);
 
     int num;
-
     uint16_t tileRow = ((scrollY + line) % 0xFF) / 8;
     uint16_t inTileY = ((scrollY + line) % 0xFF) % 8;
     for (int x = 0; x < 160; ++x) {
         uint16_t tileColumn = ((scrollX + x) % 0xFF) / 8;
         uint16_t inTileX = ((scrollX + x) % 0xFF) % 8;
+
+        uint16_t tileNumLocation = tileMap + tileRow * 32 + tileColumn;
+
+        if (tileSet == 0x8000) {
+             num = (uint8_t)memory->read(tileNumLocation);
+        } else {
+            num = (int8_t)memory->read(tileNumLocation);
+        }
+
+        framebuffer[line*160+x] = bgPalette[readTile(tileSet+num*16, inTileX, inTileY)];
+    }
+}
+
+void Screen::renderWindow() {
+    int16_t wndY = memory->read(0xFF4A);
+    int16_t wndX = memory->read(0xFF4B) - 0x7;
+
+    // Check if the window is displayed
+    if (wndY < 0
+        || wndY >= 144
+        || wndX < -7
+        || wndX >= 160) {
+        return;
+    }
+
+    // Check if the window is on the current line
+    if (wndY > (int16_t)line) {
+        return;
+    }
+
+    uint8_t palette = memory->read(0xFF47);
+
+    for (int i = 0; i < 4; ++i) {
+        bgPalette[i] = getColor((palette >> (i*2)) & 0x3);
+    }
+
+    // FF40 - LCDC - LCD Control
+    uint8_t lcdc = memory->read(0xFF40);
+    // Bit 4 - BG & Window Tile Data Select
+    uint16_t tileSet = (lcdc & 0x10) ? 0x8000 : 0x9000;
+    // Bit 6 - Window Tile Map Display Select
+    uint16_t tileMap = (lcdc & 0x40) ? 0x9C00 : 0x9800;
+
+    int num;
+    uint16_t tileRow = (line - wndY) / 8;
+    uint16_t inTileY = (line - wndY) % 8;
+
+    for (int x = (wndX < 0) ? 0 : wndX; x < 160; ++x) {
+        uint16_t tileColumn = (x - wndX) / 8;
+        uint16_t inTileX = (x - wndX) % 8;
 
         uint16_t tileNumLocation = tileMap + tileRow * 32 + tileColumn;
 

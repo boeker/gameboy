@@ -25,6 +25,7 @@ class Screen {
     void renderScanLine();
 
     void renderBackground();
+    void renderWindow();
     void renderSprites();
 
     const util::Color& getColor(int i);
