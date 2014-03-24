@@ -149,7 +149,7 @@ void Screen::renderBackground() {
     uint8_t palette = memory->read(0xFF47);
 
     for (int i = 0; i < 4; ++i) {
-        bgPalette[i] = getColor((palette >> (i*2)) & 0x3);
+        bgPalette[i] = util::Color::PALETTE[(palette >> (i*2)) & 0x3];
     }
 
     // FF40 - LCDC - LCD Control
@@ -202,7 +202,7 @@ void Screen::renderWindow() {
     uint8_t palette = memory->read(0xFF47);
 
     for (int i = 0; i < 4; ++i) {
-        bgPalette[i] = getColor((palette >> (i*2)) & 0x3);
+        bgPalette[i] = util::Color::PALETTE[(palette >> (i*2)) & 0x3];
     }
 
     // FF40 - LCDC - LCD Control
@@ -267,7 +267,7 @@ void Screen::renderSprites() {
         uint8_t palette = memory->read((optionsByte & 0x10) ? 0xFF49 : 0xFF48);
 
         for (int i = 0; i < 4; ++i) {
-            spritePalette[i] = getColor((palette >> (i*2)) & 0x3);
+            spritePalette[i] = util::Color::PALETTE[(palette >> (i*2)) & 0x3];
         }
 
         // Byte 2 - Pattern number
@@ -307,26 +307,6 @@ void Screen::renderSprites() {
                 framebuffer[line*160+xCoord+x] = spritePalette[pixel];
             }
         }
-    }
-}
-
-const util::Color& Screen::getColor(int i) {
-    switch (i) {
-        case 0:
-            return util::Color::GBWHITE;
-        break;
-        case 1:
-            return util::Color::GBLIGHTGRAY;
-        break;
-        case 2:
-            return util::Color::GBDARKGRAY;
-        break;
-        case 3:
-            return util::Color::GBBLACK;
-        break;
-        default:
-            return util::Color::GBWHITE;
-        break;
     }
 }
 

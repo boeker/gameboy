@@ -1,11 +1,6 @@
 #include "color.h"
 
 namespace util {
-const Color Color::GBWHITE = Color(255, 255, 255);
-const Color Color::GBLIGHTGRAY = Color(192, 192, 192);
-const Color Color::GBDARKGRAY = Color(96, 96, 96);
-const Color Color::GBBLACK = Color(0, 0, 0);
-
 Color::Color() :
     r(255),
     g(255),
@@ -37,4 +32,13 @@ Color& Color::operator=(const Color &right) {
 bool Color::operator==(const Color &right) const {
     return r == right.r && g == right.g && b == right.b;
 }
+
+const Color Color::GBWHITE = Color(255, 255, 255);
+const Color Color::GBLIGHTGRAY = Color(192, 192, 192);
+const Color Color::GBDARKGRAY = Color(96, 96, 96);
+const Color Color::GBBLACK = Color(0, 0, 0);
+
+const Color Color::PALETTE[] = {
+    GBWHITE, GBLIGHTGRAY, GBDARKGRAY, GBBLACK
+};
 }

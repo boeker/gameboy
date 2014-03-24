@@ -21,6 +21,7 @@ class Color {
     const static Color GBLIGHTGRAY;
     const static Color GBDARKGRAY;
     const static Color GBBLACK;
+    const static Color PALETTE[];
 };
 }
 

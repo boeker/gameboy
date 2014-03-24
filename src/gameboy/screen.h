@@ -28,7 +28,6 @@ class Screen {
     void renderWindow();
     void renderSprites();
 
-    const util::Color& getColor(int i);
     uint8_t readTile(uint16_t address, uint8_t x, uint8_t y);
 
     enum Mode {
