@@ -17,11 +17,22 @@ class Color {
     uint8_t g;
     uint8_t b;
 
-    const static Color GBWHITE;
-    const static Color GBLIGHTGRAY;
-    const static Color GBDARKGRAY;
-    const static Color GBBLACK;
-    const static Color PALETTE[];
+    const static Color WHITE;
+    const static Color LIGHTGRAY;
+    const static Color DARKGRAY;
+    const static Color BLACK;
+
+    const static Color DMG_WHITE;
+    const static Color DMG_LIGHTGRAY;
+    const static Color DMG_DARKGRAY;
+    const static Color DMG_BLACK;
+
+    static Color CUR_WHITE;
+    static Color CUR_LIGHTGRAY;
+    static Color CUR_DARKGRAY;
+    static Color CUR_BLACK;
+
+    static Color PALETTE[];
 };
 }
 

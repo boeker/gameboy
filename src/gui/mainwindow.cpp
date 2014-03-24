@@ -138,6 +138,24 @@ void MainWindow::scale6x() {
     setScaling(6);
 }
 
+void MainWindow::useDMGColors(bool dmgColors) {
+    if (dmgColors) {
+        util::Color::CUR_WHITE = util::Color::DMG_WHITE;
+        util::Color::CUR_LIGHTGRAY = util::Color::DMG_LIGHTGRAY;
+        util::Color::CUR_DARKGRAY = util::Color::DMG_DARKGRAY;
+        util::Color::CUR_BLACK = util::Color::DMG_BLACK;
+    } else {
+        util::Color::CUR_WHITE = util::Color::WHITE;
+        util::Color::CUR_LIGHTGRAY = util::Color::LIGHTGRAY;
+        util::Color::CUR_DARKGRAY = util::Color::DARKGRAY;
+        util::Color::CUR_BLACK = util::Color::BLACK;
+    }
+    util::Color::PALETTE[0] = util::Color::CUR_WHITE;
+    util::Color::PALETTE[1] = util::Color::CUR_LIGHTGRAY;
+    util::Color::PALETTE[2] = util::Color::CUR_DARKGRAY;
+    util::Color::PALETTE[3] = util::Color::CUR_BLACK;
+}
+
 void MainWindow::keyPressEvent(QKeyEvent *event) {
     if (debuggerWindow && !debuggerWindow->controlsOverridden()) {
         switch (event->key()) {

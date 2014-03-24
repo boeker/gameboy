@@ -39,6 +39,7 @@ class MainWindow : public QMainWindow {
     void scale2x();
     void scale4x();
     void scale6x();
+    void useDMGColors(bool dmgColors);
 
  protected:
     void keyPressEvent(QKeyEvent *event);

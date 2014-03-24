@@ -32,7 +32,7 @@
      <x>0</x>
      <y>0</y>
      <width>350</width>
-     <height>21</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -59,6 +59,8 @@
      <addaction name="action2x"/>
      <addaction name="action4x"/>
      <addaction name="action6x"/>
+     <addaction name="separator"/>
+     <addaction name="actionDMGColors"/>
     </widget>
     <addaction name="menuVideo"/>
    </widget>
@@ -147,6 +149,17 @@
    </property>
    <property name="text">
     <string>Reset</string>
+   </property>
+  </action>
+  <action name="actionDMGColors">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>DMG Colors</string>
    </property>
   </action>
  </widget>
@@ -296,6 +309,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionDMGColors</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>useDMGColors(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>174</x>
+     <y>166</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>scale1x()</slot>
@@ -307,5 +336,6 @@
   <slot>pauseEmulation()</slot>
   <slot>debugger()</slot>
   <slot>reset()</slot>
+  <slot>useDMGColors(bool)</slot>
  </slots>
 </ui>
