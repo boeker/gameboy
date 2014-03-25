@@ -192,5 +192,10 @@ void Core::updateKeyRegister() { //Keys are active-low
             memory->write(0xFF00, memory->read(0xFF00) | 0x01);
         }
     }
+
+    // Disable SNES Communication
+    if ((memory->read(0xFF00) & 0x30) == 0x30) {
+        memory->write(0xFF00, memory->read(0xFF00) | 0x0F); // Joypad 1
+    }
 }
 }
