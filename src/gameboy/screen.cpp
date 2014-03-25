@@ -164,11 +164,11 @@ void Screen::renderBackground() {
     uint8_t scrollY = memory->read(0xFF42);
 
     int num;
-    uint16_t tileRow = ((scrollY + line) % 0xFF) / 8;
-    uint16_t inTileY = ((scrollY + line) % 0xFF) % 8;
+    uint16_t tileRow = ((scrollY + line) % 256) / 8;
+    uint16_t inTileY = ((scrollY + line) % 256) % 8;
     for (int x = 0; x < 160; ++x) {
-        uint16_t tileColumn = ((scrollX + x) % 0xFF) / 8;
-        uint16_t inTileX = ((scrollX + x) % 0xFF) % 8;
+        uint16_t tileColumn = ((scrollX + x) % 256) / 8;
+        uint16_t inTileX = ((scrollX + x) % 256) % 8;
 
         uint16_t tileNumLocation = tileMap + tileRow * 32 + tileColumn;
 
