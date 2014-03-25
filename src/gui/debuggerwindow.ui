@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>360</width>
+    <width>362</width>
     <height>560</height>
    </rect>
   </property>
@@ -85,7 +85,11 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_5">
           <item>
-           <widget class="QLineEdit" name="lineEditBreakpoint"/>
+           <widget class="QLineEdit" name="lineEditBreakpoint">
+            <property name="text">
+             <string>-1</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>

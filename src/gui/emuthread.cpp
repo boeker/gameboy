@@ -2,6 +2,7 @@
 
 #include <QDebug>
 #include "gameboy/core.h"
+#include "exceptions/breakpoint.h"
 #include "screenwidget.h"
 
 EmuThread::EmuThread(gameboy::Core *core,
@@ -21,14 +22,19 @@ void EmuThread::run() {
         }
     } else {
         while (!stopped) {
-            gameboyCore->emulateUntilVBlank();
+            try {
+                gameboyCore->emulateUntilVBlank();
 
-            if (screenWidget->resizeNeeded) {
-                screenWidget->resizePub(screenWidget->newWidth, screenWidget->newHeight);
-                screenWidget->resizeNeeded = false;
+                if (screenWidget->resizeNeeded) {
+                    screenWidget->resizePub(screenWidget->newWidth, screenWidget->newHeight);
+                    screenWidget->resizeNeeded = false;
+                }
+
+                screenWidget->updateGL();
+            } catch (exceptions::Breakpoint& bp) {
+                qDebug() << "Breakpoint";
+                return;
             }
-
-            screenWidget->updateGL();
         }
     }
 }

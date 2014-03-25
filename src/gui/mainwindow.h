@@ -33,6 +33,8 @@ class MainWindow : public QMainWindow {
     void debugger();
     void continueEmulation();
     void pauseEmulation();
+    void resumed();
+    void paused();
     void loadROM();
     void reset();
     void scale1x();

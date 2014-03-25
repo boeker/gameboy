@@ -103,9 +103,9 @@ void DebuggerWindow::clickedSelect(bool status) {
 }
 
 void DebuggerWindow::breakpointSet() {
-    uint16_t bp = (uint16_t)ui->lineEditBreakpoint->text().toInt(0, 16);
+    int bp = ui->lineEditBreakpoint->text().toInt(0, 16);
     gameboyCore->breakpoint = bp;
-    qDebug() << bp;
+    qDebug() << "Breakpoint set @" << toDoubleHexString(bp);
 }
 
 QString DebuggerWindow::toDoubleHexString(int value) {

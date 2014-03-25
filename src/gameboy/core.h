@@ -5,6 +5,8 @@
 #include <string>
 #include <atomic>
 
+#include "exceptions/breakpoint.h"
+
 namespace util {
 class Color;
 }
@@ -33,13 +35,13 @@ class Core {
     void handleCB();
     void xx();
     void CBxx();
-    void emulateUntilVBlank();
+    void emulateUntilVBlank() throw (exceptions::Breakpoint);
     void updateKeyRegister();
 
     CPURegisters *registers;
     Memory *memory;
 
-    std::atomic<uint16_t> breakpoint;
+    std::atomic<int32_t> breakpoint;
 
  private:
     Screen *screen;
