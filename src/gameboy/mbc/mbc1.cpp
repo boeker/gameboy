@@ -32,9 +32,9 @@ void MBC1::write(uint16_t address, uint8_t value) {
 
         currentROMBank = (currentROMBank & 0xE0) | lowerFiveBits;
     } else if (address >= 0x4000 && address <= 0x5FFF) { // Upper 2 Bits of ROM Bank Number
-        uint8_t upperTwoBits = value & 0x60;
+        uint8_t upperTwoBits = value & 0x03;
 
-        currentROMBank = (currentROMBank & 0x1F) | upperTwoBits;
+        currentROMBank = (currentROMBank & 0x1F) | (upperTwoBits << 5);
     }
 
     if (currentROMBank == 0x00

@@ -17,6 +17,7 @@ HEADERS += src/gui/mainwindow.h \
            src/gameboy/mbc/memorybankcontroller.h \
            src/gameboy/mbc/romonly.h \
            src/gameboy/mbc/mbc1.h \
+           src/gameboy/mbc/mbc1ram.h \
            src/util/color.h
            src/exceptions/breakpoint.h
 SOURCES += src/main.cpp \
@@ -35,6 +36,7 @@ SOURCES += src/main.cpp \
            src/gameboy/timer.cpp \
            src/gameboy/mbc/romonly.cpp \
            src/gameboy/mbc/mbc1.cpp \
+           src/gameboy/mbc/mbc1ram.cpp \
            src/util/color.cpp
 FORMS += src/gui/mainwindow.ui \
          src/gui/debuggerwindow.ui

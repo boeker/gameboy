@@ -7,6 +7,7 @@
 #include "mbc/memorybankcontroller.h"
 #include "mbc/romonly.h"
 #include "mbc/mbc1.h"
+#include "mbc/mbc1ram.h"
 
 namespace gameboy {
 Memory::Memory() {
@@ -113,6 +114,35 @@ void Memory::loadROM(const std::string &file) {
         cartridge.read(reinterpret_cast<char*>(romBanks[i]), 16384);
     }
 
+    uint8_t ramSize = rom[0x0149];
+    uint8_t addRamBanks;
+    uint8_t** ramBanks;
+    switch (ramSize) {
+        case 0x01:
+            addRamBanks = 1;
+            ramBanks = new uint8_t*[addRamBanks];
+            // ramBanks[0] = new uint8_t[2048];
+            ramBanks[0] = new uint8_t[8192]; // Avoid issues
+        break;
+        case 0x02:
+            addRamBanks = 1;
+            ramBanks = new uint8_t*[addRamBanks];
+            ramBanks[0] = new uint8_t[8192];
+        break;
+        case 0x03:
+            addRamBanks = 4;
+            ramBanks = new uint8_t*[addRamBanks];
+            for (int i = 0; i < addRamBanks; ++i) {
+                ramBanks[i] = new uint8_t[8192];
+            }
+        break;
+        default:
+            addRamBanks = 0;
+            ramBanks = new uint8_t*[1];
+            ramBanks[0] = 0;
+        break;
+    }
+
     uint8_t cartridgeType = rom[0x0147];
     switch (cartridgeType) {
         case 0x00: // ROM only
@@ -121,6 +151,12 @@ void Memory::loadROM(const std::string &file) {
         break;
         case 0x01: // MBC1
             mbc = new mbc::MBC1(romBanks, addBanks);
+        break;
+        case 0x02: // MBC1 + RAM
+            mbc = new mbc::MBC1RAM(romBanks, addBanks, ramBanks, addRamBanks);
+        break;
+        case 0x03: // MBC1 + RAM + BATTERY
+            mbc = new mbc::MBC1RAM(romBanks, addBanks, ramBanks, addRamBanks);
         break;
         default:
             qDebug() << "Unknown cartridge type " << cartridgeType;
