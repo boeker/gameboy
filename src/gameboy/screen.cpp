@@ -45,7 +45,7 @@ void Screen::step(unsigned int lastClocks) {
             if (clocks >= 20) {
                 clocks = 0;
                 mode = VRAM;
-                memory->write(0xFF41, memory->read(0xFF41) | 0x03); // Indicate VRAM Mode 00
+                memory->write(0xFF41, memory->read(0xFF41) | 0x03); // Indicate VRAM Mode 11
             }
         break;
         case VRAM:
@@ -54,6 +54,10 @@ void Screen::step(unsigned int lastClocks) {
                 mode = HBLANK;
                 renderScanLine();
                 memory->write(0xFF41, memory->read(0xFF41) & 0xFC); // Indicate H-Blank Mode 00
+                
+                if (memory->read(0xFF41) & 0x08) { // Mode 00 Interrupt
+                    memory->write(0xFF0F, memory->read(0xFF0F) | 0x02); // Set LCD-STAT Interrupt Flag
+                }
             }
         break;
         case HBLANK:
@@ -65,11 +69,20 @@ void Screen::step(unsigned int lastClocks) {
                     drawFlag = true;
                     memory->write(0xFF41, memory->read(0xFF41) & 0xFD); // Indicate V-Blank Mode 01
                     memory->write(0xFF41, memory->read(0xFF41) | 0x01);
+
+                    if (memory->read(0xFF41) & 0x10) { // Mode 01 Interrupt
+                        memory->write(0xFF0F, memory->read(0xFF0F) | 0x02); // Set LCD-STAT Interrupt Flag
+                    }
+
                     memory->write(0xFF0F, memory->read(0xFF0F) | 0x01); //Set V-Blank Interrupt Flag
                 } else {
                     mode = OAM;
                     memory->write(0xFF41, memory->read(0xFF41) & 0xFE); // Indicate OAM Mode 10
                     memory->write(0xFF41, memory->read(0xFF41) | 0x02);
+
+                    if (memory->read(0xFF41) & 0x20) { // Mode 10 Interrupt
+                        memory->write(0xFF0F, memory->read(0xFF0F) | 0x02); // Set LCD-STAT Interrupt Flag
+                    }
                 }
             }
         break;
@@ -82,6 +95,10 @@ void Screen::step(unsigned int lastClocks) {
                     line = 0;
                     memory->write(0xFF41, memory->read(0xFF41) & 0xFE); // Indicate OAM Mode 10
                     memory->write(0xFF41, memory->read(0xFF41) | 0x02);
+
+                    if (memory->read(0xFF41) & 0x20) { // Mode 10 Interrupt
+                        memory->write(0xFF0F, memory->read(0xFF0F) | 0x02); // Set LCD-STAT Interrupt Flag
+                    }
                 }
             }
         break;
@@ -90,35 +107,18 @@ void Screen::step(unsigned int lastClocks) {
     memory->write(0xFF44, static_cast<uint8_t>(line));
 
     // FF41 (STAT)
-    uint8_t ff41 = memory->read(0xFF41);
-    if (ff41 & 0x40) { // LYC=LY Coincidence Interrupt enabled
-        uint8_t ly = memory->read(0xFF44);
-        uint8_t lyc = memory->read(0xFF45);
+    uint8_t stat = memory->read(0xFF41);
 
-        if (ff41 & 0x04) { // LYC = LY Interrupt
-            if (ly == lyc) {
-                memory->write(0xFF0F, memory->read(0xFF0F) | 0x02); // Set LCD-STAT Interrupt Flag
-            }
-        } else { // LYC != LY Interrupt
-            if (ly != lyc) {
-                memory->write(0xFF0F, memory->read(0xFF0F) | 0x02); // Set LCD-STAT Interrupt Flag
-            } 
-        }
-    }
-    if (ff41 & 0x20) { // Mode 10 = 0x2
-        if ((ff41 & 0x3) == 0x2) {
+    uint8_t ly = memory->read(0xFF44);
+    uint8_t lyc = memory->read(0xFF45);
+    if (lyc == ly) {
+        memory->write(0xFF41, stat | 0x04); // Set Coincidence Flag
+
+        if (stat & 0x40) { // LYC=LY Coincidence Interrupt enabled
             memory->write(0xFF0F, memory->read(0xFF0F) | 0x02); // Set LCD-STAT Interrupt Flag
         }
-    }
-    if (ff41 & 0x10) { // Mode 01 = 0x1
-        if ((ff41 & 0x3) == 0x1) {
-            memory->write(0xFF0F, memory->read(0xFF0F) | 0x02); // Set LCD-STAT Interrupt Flag
-        }
-    }
-    if (ff41 & 0x08) { // Mode 00 = 0x0
-        if ((ff41 & 0x3) == 0x0) {
-            memory->write(0xFF0F, memory->read(0xFF0F) | 0x02); // Set LCD-STAT Interrupt Flag
-        }
+    } else {
+        memory->write(0xFF41, stat & 0xFB); // Clear Coincidence Flag
     }
 }
 
