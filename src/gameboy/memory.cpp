@@ -10,6 +10,8 @@
 #include "mbc/mbc1ram.h"
 #include "mbc/mbc1rambatt.h"
 #include "mbc/mbc3.h"
+#include "mbc/mbc2.h"
+#include "mbc/mbc2batt.h"
 #include "mbc/mbc3ram.h"
 #include "mbc/mbc3rambatt.h"
 #include "mbc/mbc3tim.h"
@@ -172,6 +174,12 @@ void Memory::loadROM(const std::string &file) {
         break;
         case 0x03: // MBC1 + RAM + BATTERY
             mbc = new mbc::MBC1RAMBATT(romBanks, numBanks, ramBanks, numRamBanks, ramLength, saveFile);
+        break;
+        case 0x05: // MBC2
+            mbc = new mbc::MBC2(romBanks, numBanks);
+        break;
+        case 0x06: // MBC2 + BATTERY
+            mbc = new mbc::MBC2BATT(romBanks, numBanks, saveFile);
         break;
         case 0x19: // MBC5
             mbc = new mbc::MBC5(romBanks, numBanks);

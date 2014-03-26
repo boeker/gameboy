@@ -20,6 +20,8 @@ HEADERS += src/gui/mainwindow.h \
            src/gameboy/mbc/mbc1.h \
            src/gameboy/mbc/mbc1ram.h \
            src/gameboy/mbc/mbc1rambatt.h \
+           src/gameboy/mbc/mbc2.h \
+           src/gameboy/mbc/mbc2batt.h \
            src/gameboy/mbc/mbc3.h \
            src/gameboy/mbc/mbc3ram.h \
            src/gameboy/mbc/mbc3rambatt.h \
@@ -49,6 +51,8 @@ SOURCES += src/main.cpp \
            src/gameboy/mbc/mbc1.cpp \
            src/gameboy/mbc/mbc1ram.cpp \
            src/gameboy/mbc/mbc1rambatt.cpp \
+           src/gameboy/mbc/mbc2.cpp \
+           src/gameboy/mbc/mbc2batt.cpp \
            src/gameboy/mbc/mbc3.cpp \
            src/gameboy/mbc/mbc3ram.cpp \
            src/gameboy/mbc/mbc3rambatt.cpp \
