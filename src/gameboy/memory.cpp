@@ -8,6 +8,7 @@
 #include "mbc/romonly.h"
 #include "mbc/mbc1.h"
 #include "mbc/mbc1ram.h"
+#include "mbc/mbc5ram.h"
 
 namespace gameboy {
 Memory::Memory() {
@@ -157,6 +158,12 @@ void Memory::loadROM(const std::string &file) {
         break;
         case 0x03: // MBC1 + RAM + BATTERY
             mbc = new mbc::MBC1RAM(romBanks, addBanks, ramBanks, addRamBanks);
+        break;
+        case 0x1A: // MBC5 + RAM
+            mbc = new mbc::MBC5RAM(romBanks, addBanks, ramBanks, addRamBanks);
+        break;
+        case 0x1B: // MBC5 + RAM + BATTERY
+            mbc = new mbc::MBC5RAM(romBanks, addBanks, ramBanks, addRamBanks);
         break;
         default:
             qDebug() << "Unknown cartridge type " << cartridgeType;
