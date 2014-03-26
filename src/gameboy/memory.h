@@ -62,7 +62,7 @@ class Memory {
     uint8_t *spriteAttTab;  // FE00-FE9F, 160 bytes
     uint8_t *internalRam;   // C000-DFFF, 8192 bytes
                             // E000-FDFF (7680 bytes) are echoed to this
-    uint8_t *externalRam;   // A000-BFFF, 8192 bytes
+                            // A000-BFFF, 8192 bytes (external RAM)
     uint8_t *videoRam;      // 8000-9FFF, 8192 bytes
     uint8_t *romBank;       // 4000-7FFF, switchable
                             // at least 1x16384 bytes

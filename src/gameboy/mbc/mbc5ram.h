@@ -1,4 +1,4 @@
-#ifndef GAMEBOY_MBC_MBC5RAM_H
+/*#ifndef GAMEBOY_MBC_MBC5RAM_H
 #define GAMEBOY_MBC_MBC5RAM_H
 
 #include <cinttypes>
@@ -29,4 +29,4 @@ class MBC5RAM : public MemoryBankController {
 }
 }
 
-#endif
+#endif*/

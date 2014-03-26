@@ -9,18 +9,12 @@ namespace gameboy {
 namespace mbc {
 class MBC1 : public MemoryBankController {
  public:
-    MBC1(uint8_t **romBanks, uint8_t num);
-    virtual ~MBC1();
-    virtual uint8_t* getExternalRAM();
-    virtual uint8_t* getROMBank();
+    MBC1(uint8_t **romBanks, uint8_t numBanks);
+    virtual uint8_t* getCurrentROMBank();
     virtual void write(uint16_t address, uint8_t value);
 
  private:
-    uint8_t **romBanks;
-    uint8_t numOfROMBanks;
     uint16_t currentROMBank;
-
-    uint8_t *ram;
 };
 }
 }

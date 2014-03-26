@@ -2,21 +2,12 @@
 
 namespace gameboy {
 namespace mbc {
-ROMOnly::ROMOnly(uint8_t *romBank) :
-    romBank(romBank) {
-        ram = new uint8_t[8192];
+ROMOnly::ROMOnly(uint8_t **romBanks, uint8_t numBanks) :
+    MemoryBankController(romBanks, numBanks) {
 }
 
-ROMOnly::~ROMOnly() {
-    delete[] ram;
-}
-
-uint8_t* ROMOnly::getExternalRAM() {
-    return ram;
-}
-
-uint8_t* ROMOnly::getROMBank() {
-    return romBank;
+uint8_t* ROMOnly::getCurrentROMBank() {
+    return romBanks[1];
 }
 
 void ROMOnly::write(uint16_t, uint8_t) {

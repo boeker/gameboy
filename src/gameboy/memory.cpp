@@ -8,7 +8,8 @@
 #include "mbc/romonly.h"
 #include "mbc/mbc1.h"
 #include "mbc/mbc1ram.h"
-#include "mbc/mbc5ram.h"
+#include "mbc/mbc1rambatt.h"
+//#include "mbc/mbc5ram.h"
 
 namespace gameboy {
 Memory::Memory() {
@@ -31,7 +32,6 @@ Memory::~Memory() {
     delete[] spriteAttTab;
     delete[] internalRam;
     delete[] videoRam;
-    delete[] rom;
 
     if (mbc) {
         delete mbc;
@@ -93,77 +93,82 @@ void Memory::loadROM(const std::string &file) {
     cartridge.read(reinterpret_cast<char*>(rom), 16384);
 
     uint8_t romSize = rom[0x0148];
-    uint16_t addBanks;
+    uint16_t numBanks;
     switch (romSize) {
         case 0x52:
-            addBanks = 72-1;
+            numBanks = 72;
         break;
         case 0x53:
-            addBanks = 80-1;
+            numBanks = 80;
         break;
         case 0x54:
-            addBanks = 96-1;
+            numBanks = 96;
         break;
         default:
-            addBanks = pow(2, romSize+1)-1;
+            numBanks = pow(2, romSize+1);
         break;
     }
 
-    uint8_t** romBanks = new uint8_t*[addBanks];
-    for (int i = 0; i < addBanks; ++i) {
+    uint8_t** romBanks = new uint8_t*[numBanks];
+    romBanks[0] = rom;
+    for (int i = 1; i < numBanks; ++i) {
         romBanks[i] = new uint8_t[16384];
         cartridge.read(reinterpret_cast<char*>(romBanks[i]), 16384);
     }
 
     uint8_t ramSize = rom[0x0149];
-    uint8_t addRamBanks;
+    uint8_t numRamBanks;
     uint8_t** ramBanks;
+    uint16_t ramLength = 0;
     switch (ramSize) {
         case 0x01:
-            addRamBanks = 1;
-            ramBanks = new uint8_t*[addRamBanks];
-            // ramBanks[0] = new uint8_t[2048];
-            ramBanks[0] = new uint8_t[8192]; // Avoid issues
+            ramLength = 2048;
+            numRamBanks = 1;
+            ramBanks = new uint8_t*[numRamBanks];
+            ramBanks[0] = new uint8_t[ramLength];
+            memset(ramBanks[0], 0, ramLength);
         break;
         case 0x02:
-            addRamBanks = 1;
-            ramBanks = new uint8_t*[addRamBanks];
-            ramBanks[0] = new uint8_t[8192];
+            ramLength = 8192;
+            numRamBanks = 1;
+            ramBanks = new uint8_t*[numRamBanks];
+            ramBanks[0] = new uint8_t[ramLength];
+            memset(ramBanks[0], 0, ramLength);
         break;
         case 0x03:
-            addRamBanks = 4;
-            ramBanks = new uint8_t*[addRamBanks];
-            for (int i = 0; i < addRamBanks; ++i) {
-                ramBanks[i] = new uint8_t[8192];
+            ramLength = 8192;
+            numRamBanks = 4;
+            ramBanks = new uint8_t*[numRamBanks];
+            for (int i = 0; i < numRamBanks; ++i) {
+                ramBanks[i] = new uint8_t[ramLength];
+                memset(ramBanks[i], 0, ramLength);
             }
         break;
         default:
-            addRamBanks = 0;
-            ramBanks = new uint8_t*[1];
-            ramBanks[0] = 0;
+            numRamBanks = 0;
+            ramBanks = 0;
         break;
     }
 
     uint8_t cartridgeType = rom[0x0147];
     switch (cartridgeType) {
         case 0x00: // ROM only
-            mbc = new mbc::ROMOnly(romBanks[0]);
-            delete[] romBanks;
+            mbc = new mbc::ROMOnly(romBanks, numBanks);
         break;
         case 0x01: // MBC1
-            mbc = new mbc::MBC1(romBanks, addBanks);
+            mbc = new mbc::MBC1(romBanks, numBanks);
         break;
         case 0x02: // MBC1 + RAM
-            mbc = new mbc::MBC1RAM(romBanks, addBanks, ramBanks, addRamBanks);
+            mbc = new mbc::MBC1RAM(romBanks, numBanks, ramBanks, numRamBanks, ramLength);
         break;
         case 0x03: // MBC1 + RAM + BATTERY
-            mbc = new mbc::MBC1RAM(romBanks, addBanks, ramBanks, addRamBanks);
+            mbc = new mbc::MBC1RAMBATT(romBanks, numBanks, ramBanks, numRamBanks, ramLength, file + ".sav");
         break;
         case 0x1A: // MBC5 + RAM
-            mbc = new mbc::MBC5RAM(romBanks, addBanks, ramBanks, addRamBanks);
+            //mbc = new mbc::MBC5RAM(romBanks, numBanks, ramBanks, numRamBanks);
         break;
         case 0x1B: // MBC5 + RAM + BATTERY
-            mbc = new mbc::MBC5RAM(romBanks, addBanks, ramBanks, addRamBanks);
+            //mbc = new mbc::MBC5RAM(romBanks, numBanks, ramBanks, numRamBanks);
         break;
         default:
             qDebug() << "Unknown cartridge type " << cartridgeType;
@@ -171,43 +176,49 @@ void Memory::loadROM(const std::string &file) {
         break;
     }
 
-    romBank = mbc->getROMBank();
-    externalRam = mbc->getExternalRAM();
+    romBank = mbc->getCurrentROMBank();
 }
 
 uint8_t Memory::read(uint16_t address) {
-    uint8_t *memLoc = resolveAddress(address);
-    return *memLoc;
+    if ((address >= 0xA000) && (address <= 0xBFFF)) {
+        return mbc->readRAM(address - 0xA000);
+    } else {
+        uint8_t *memLoc = resolveAddress(address);
+        return *memLoc;
+    }
 }
 
 void Memory::write(uint16_t address, uint8_t value) {
-    if (address <= 0x7FFF) {
+    if (address <= 0x7FFF) { // Write to ROM
         mbc->write(address, value);
-        romBank = mbc->getROMBank();
-        externalRam = mbc->getExternalRAM();
+        romBank = mbc->getCurrentROMBank();
+    } else if ((address >= 0xA000) && (address <= 0xBFFF)) {
+        mbc->writeRAM(address - 0xA000, value);
+    } else {
+        uint8_t *memLoc = resolveAddress(address);
+        *memLoc = value;
 
-        return;
-    }
-
-    uint8_t *memLoc = resolveAddress(address);
-    *memLoc = value;
-
-    // FF46 - DMA - DMA Transfer and Start Address (W)
-    if (address == 0xFF46) {
-        uint16_t startAddr = read(0xFF46) * 0x100;
-        for (int i = 0; i < 160; ++i) {
-            write(0xFE00+i, read(startAddr+i));
+        // FF46 - DMA - DMA Transfer and Start Address (W)
+        if (address == 0xFF46) {
+            uint16_t startAddr = read(0xFF46) * 0x100;
+            for (int i = 0; i < 160; ++i) {
+                write(0xFE00+i, read(startAddr+i));
+            }
         }
-    }
-    // FF04 - Divider Timer - Resets to 0 whenever written to
-    if (address == 0xFF04) {
-        *memLoc = 0;
+        // FF04 - Divider Timer - Resets to 0 whenever written to
+        if (address == 0xFF04) {
+            *memLoc = 0;
+        }
     }
 }
 
 void Memory::writeRaw(uint16_t address, uint8_t value) {
-    uint8_t *memLoc = resolveAddress(address);
-    *memLoc = value;
+    if ((address >= 0xA000) && (address <= 0xBFFF)) {
+        mbc->writeRAM(address - 0xA000, value);
+    } else {
+        uint8_t *memLoc = resolveAddress(address);
+        *memLoc = value;
+    }
 }
 
 uint16_t Memory::readW(uint16_t address) {
@@ -229,9 +240,7 @@ uint8_t* Memory::resolveAddress(uint16_t address) {
     if ((address >= 0x8000) && (address <= 0x9FFF)) {
         return videoRam + address - 0x8000;
     }
-    if ((address >= 0xA000) && (address <= 0xBFFF)) {
-        return externalRam + address - 0xA000;
-    }
+    // External RAM
     if ((address >= 0xC000) && (address <= 0xDFFF)) {
         return internalRam + address - 0xC000;
     }

@@ -2,28 +2,13 @@
 
 namespace gameboy {
 namespace mbc {
-MBC1::MBC1(uint8_t **romBanks, uint8_t num) :
-    romBanks(romBanks),
-    numOfROMBanks(num),
+MBC1::MBC1(uint8_t **romBanks, uint8_t numBanks) :
+    MemoryBankController(romBanks, numBanks),
     currentROMBank(1) {
-        ram = new uint8_t[8192];
 }
 
-MBC1::~MBC1() {
-    delete[] ram;
-    
-    for (int i = 0; i < numOfROMBanks; ++i) {
-        delete[] romBanks[i];
-    }
-    delete[] romBanks;
-}
-
-uint8_t* MBC1::getExternalRAM() {
-    return ram;
-}
-
-uint8_t* MBC1::getROMBank() {
-    return romBanks[currentROMBank-1];
+uint8_t* MBC1::getCurrentROMBank() {
+    return romBanks[currentROMBank];
 }
 
 void MBC1::write(uint16_t address, uint8_t value) {

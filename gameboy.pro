@@ -2,7 +2,8 @@ QT += core gui widgets opengl
 TEMPLATE = app
 TARGET = gameboy
 INCLUDEPATH += src
-CONFIG += c++11 console
+CONFIG += c++11 console debug
+#DEFINES += QT_NO_DEBUG_OUTPUT
 
 HEADERS += src/gui/mainwindow.h \
            src/gui/screenwidget.h \
@@ -18,7 +19,8 @@ HEADERS += src/gui/mainwindow.h \
            src/gameboy/mbc/romonly.h \
            src/gameboy/mbc/mbc1.h \
            src/gameboy/mbc/mbc1ram.h \
-           src/gameboy/mbc/mbc5ram.h \
+           src/gameboy/mbc/mbc1rambatt.h \
+           #src/gameboy/mbc/mbc5ram.h \
            src/util/color.h
            src/exceptions/breakpoint.h
 SOURCES += src/main.cpp \
@@ -35,10 +37,12 @@ SOURCES += src/main.cpp \
            src/gameboy/memory.cpp \
            src/gameboy/screen.cpp \
            src/gameboy/timer.cpp \
+           src/gameboy/mbc/memorybankcontroller.cpp \
            src/gameboy/mbc/romonly.cpp \
            src/gameboy/mbc/mbc1.cpp \
            src/gameboy/mbc/mbc1ram.cpp \
-           src/gameboy/mbc/mbc5ram.cpp \
+           src/gameboy/mbc/mbc1rambatt.cpp \
+           #src/gameboy/mbc/mbc5ram.cpp \
            src/util/color.cpp
 FORMS += src/gui/mainwindow.ui \
          src/gui/debuggerwindow.ui
