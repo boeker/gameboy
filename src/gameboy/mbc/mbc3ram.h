@@ -1,16 +1,16 @@
-#ifndef GAMEBOY_MBC_MBC1RAM_H
-#define GAMEBOY_MBC_MBC1RAM_H
+#ifndef GAMEBOY_MBC_MBC3RAM_H
+#define GAMEBOY_MBC_MBC3RAM_H
 
 #include <cinttypes>
 
-#include "mbc1.h"
+#include "mbc3.h"
 
 namespace gameboy {
 namespace mbc {
-class MBC1RAM : public MBC1 {
+class MBC3RAM : public MBC3 {
  public:
-    MBC1RAM(uint8_t **romBanks, uint8_t numBanks, uint8_t **ramBanks, uint8_t numRam, uint16_t length);
-    virtual ~MBC1RAM();
+    MBC3RAM(uint8_t **romBanks, uint8_t numBanks, uint8_t **ramBanks, uint8_t numRam, uint16_t length);
+    virtual ~MBC3RAM();
     virtual void write(uint16_t address, uint8_t value);
 
     virtual void writeRAM(uint16_t address, uint8_t value);
@@ -23,7 +23,6 @@ class MBC1RAM : public MBC1 {
 
  private:
     uint16_t currentRAMBank;
-    bool ramBanking;
     bool enabled;
 };
 }

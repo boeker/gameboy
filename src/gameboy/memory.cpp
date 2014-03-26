@@ -9,6 +9,11 @@
 #include "mbc/mbc1.h"
 #include "mbc/mbc1ram.h"
 #include "mbc/mbc1rambatt.h"
+#include "mbc/mbc3.h"
+#include "mbc/mbc3ram.h"
+#include "mbc/mbc3rambatt.h"
+#include "mbc/mbc3tim.h"
+#include "mbc/mbc3timrambatt.h"
 #include "mbc/mbc5.h"
 #include "mbc/mbc5ram.h"
 #include "mbc/mbc5rambatt.h"
@@ -185,6 +190,21 @@ void Memory::loadROM(const std::string &file) {
         break;
         case 0x1E: // MBC5 + RUMBLE + RAM + BATTERY
             mbc = new mbc::MBC5RAMBATT(romBanks, numBanks, ramBanks, numRamBanks, ramLength, saveFile);
+        break;
+        case 0x0F: // MBC3 + TIMER + BATTERY
+            mbc = new mbc::MBC3TIM(romBanks, numBanks);
+        break;
+        case 0x10: // MBC3 + TIMER + RAM + BATTERY
+            mbc = new mbc::MBC3TIMRAMBATT(romBanks, numBanks, ramBanks, numRamBanks, ramLength, saveFile);
+        break;
+        case 0x11: // MBC3
+            mbc = new mbc::MBC3(romBanks, numBanks);
+        break;
+        case 0x12: // MBC3 + RAM
+            mbc = new mbc::MBC3RAM(romBanks, numBanks, ramBanks, numRamBanks, ramLength);
+        break;
+        case 0x13: // MBC3 + RAM + BATTERY
+            mbc = new mbc::MBC3RAMBATT(romBanks, numBanks, ramBanks, numRamBanks, ramLength, saveFile);
         break;
         default:
             qDebug() << "Unknown cartridge type " << cartridgeType;

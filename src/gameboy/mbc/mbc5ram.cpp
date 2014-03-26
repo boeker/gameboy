@@ -21,7 +21,7 @@ MBC5RAM::~MBC5RAM() {
 
 void MBC5RAM::write(uint16_t address, uint8_t value) {
     if (address <= 0x1FFF) {
-        enabled = value;
+        enabled = (value & 0x0A) == 0x0A;
     } else if (address >= 0x4000 && address <= 0x5FFF) { // RAM Bank Number
         currentRAMBank = value & 0x0F;
     } else {
