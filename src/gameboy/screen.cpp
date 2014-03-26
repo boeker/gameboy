@@ -8,6 +8,7 @@
 
 namespace gameboy {
 Screen::Screen(Memory *memory) :
+    clocks(0),
     memory(memory) {
     framebuffer = new util::Color[160 * 144];
 

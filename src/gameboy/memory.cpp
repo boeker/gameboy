@@ -19,7 +19,6 @@ Memory::Memory() {
     spriteAttTab = new uint8_t[160];
     internalRam = new uint8_t[8192];
     videoRam = new uint8_t[8192];
-    rom = new uint8_t[16384];
     mbc = 0;
 
     reset();
@@ -45,7 +44,6 @@ void Memory::reset() {
     memset(spriteAttTab, 0, 160);
     memset(internalRam, 0, 8192);
     memset(videoRam, 0, 8192);
-    memset(rom, 0, 16384);
 
     writeRaw(0xFF05, 0x00);
     writeRaw(0xFF06, 0x00);
@@ -86,6 +84,8 @@ void Memory::reset() {
 }
 
 void Memory::loadROM(const std::string &file) {
+    rom = new uint8_t[16384];
+
     std::ifstream cartridge(file.c_str(), std::ios::binary);
     if (!cartridge.good()) {
         exit(1);
