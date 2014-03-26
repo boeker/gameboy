@@ -8,7 +8,8 @@ MBC5RAM::MBC5RAM(uint8_t **romBanks, uint8_t numBanks, uint8_t **ramBanks, uint8
     numOfRAMBanks(numRam),
     ramLength(length),
     currentRAMBank(0),
-    ramBanking(false) {
+    ramBanking(false),
+    enabled(false) {
 }
 
 MBC5RAM::~MBC5RAM() {
@@ -19,7 +20,9 @@ MBC5RAM::~MBC5RAM() {
 }
 
 void MBC5RAM::write(uint16_t address, uint8_t value) {
-    if (address >= 0x4000 && address <= 0x5FFF) { // RAM Bank Number
+    if (address <= 0x1FFF) {
+        enabled = value;
+    } else if (address >= 0x4000 && address <= 0x5FFF) { // RAM Bank Number
         currentRAMBank = value & 0x0F;
     } else {
         MBC5::write(address, value);
@@ -27,11 +30,13 @@ void MBC5RAM::write(uint16_t address, uint8_t value) {
 }
 
 void MBC5RAM::writeRAM(uint16_t address, uint8_t value) {
-    ramBanks[currentRAMBank][address] = value;
+    if (enabled) {
+        ramBanks[currentRAMBank][address] = value;
+    }
 }
 
 uint8_t MBC5RAM::readRAM(uint16_t address) {
-    return ramBanks[currentRAMBank][address];
+    return enabled ? ramBanks[currentRAMBank][address] : 0;
 }
 }
 }

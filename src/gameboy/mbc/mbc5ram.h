@@ -24,6 +24,7 @@ class MBC5RAM : public MBC5 {
  private:
     uint16_t currentRAMBank;
     bool ramBanking;
+    bool enabled;
 };
 }
 }
