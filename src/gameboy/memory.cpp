@@ -9,7 +9,9 @@
 #include "mbc/mbc1.h"
 #include "mbc/mbc1ram.h"
 #include "mbc/mbc1rambatt.h"
-//#include "mbc/mbc5ram.h"
+#include "mbc/mbc5.h"
+#include "mbc/mbc5ram.h"
+#include "mbc/mbc5rambatt.h"
 
 namespace gameboy {
 Memory::Memory() {
@@ -150,6 +152,8 @@ void Memory::loadROM(const std::string &file) {
         break;
     }
 
+    std::string saveFile = file.substr(0, file.find_last_of('.')) + ".sav";
+
     uint8_t cartridgeType = rom[0x0147];
     switch (cartridgeType) {
         case 0x00: // ROM only
@@ -162,13 +166,25 @@ void Memory::loadROM(const std::string &file) {
             mbc = new mbc::MBC1RAM(romBanks, numBanks, ramBanks, numRamBanks, ramLength);
         break;
         case 0x03: // MBC1 + RAM + BATTERY
-            mbc = new mbc::MBC1RAMBATT(romBanks, numBanks, ramBanks, numRamBanks, ramLength, file + ".sav");
+            mbc = new mbc::MBC1RAMBATT(romBanks, numBanks, ramBanks, numRamBanks, ramLength, saveFile);
+        break;
+        case 0x19: // MBC5
+            mbc = new mbc::MBC5(romBanks, numBanks);
         break;
         case 0x1A: // MBC5 + RAM
-            //mbc = new mbc::MBC5RAM(romBanks, numBanks, ramBanks, numRamBanks);
+            mbc = new mbc::MBC5RAM(romBanks, numBanks, ramBanks, numRamBanks, ramLength);
         break;
         case 0x1B: // MBC5 + RAM + BATTERY
-            //mbc = new mbc::MBC5RAM(romBanks, numBanks, ramBanks, numRamBanks);
+            mbc = new mbc::MBC5RAMBATT(romBanks, numBanks, ramBanks, numRamBanks, ramLength, saveFile);
+        break;
+        case 0x1C: // MBC5 + RUMBLE
+            mbc = new mbc::MBC5(romBanks, numBanks);
+        break;
+        case 0x1D: // MBC5 + RUMBLE + RAM
+            mbc = new mbc::MBC5RAM(romBanks, numBanks, ramBanks, numRamBanks, ramLength);
+        break;
+        case 0x1E: // MBC5 + RUMBLE + RAM + BATTERY
+            mbc = new mbc::MBC5RAMBATT(romBanks, numBanks, ramBanks, numRamBanks, ramLength, saveFile);
         break;
         default:
             qDebug() << "Unknown cartridge type " << cartridgeType;
