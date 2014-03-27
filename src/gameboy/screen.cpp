@@ -42,14 +42,14 @@ void Screen::step(unsigned int lastClocks) {
     drawFlag = false;
 
     switch (mode) {
-        case OAM:
+        case OAM: // Mode 10
             if (clocks >= 20) {
                 clocks = 0;
                 mode = VRAM;
                 memory->write(0xFF41, memory->read(0xFF41) | 0x03); // Indicate VRAM Mode 11
             }
         break;
-        case VRAM:
+        case VRAM: // Mode 11
             if (clocks >= 43) {
                 clocks = 0;
                 mode = HBLANK;
@@ -61,7 +61,7 @@ void Screen::step(unsigned int lastClocks) {
                 }
             }
         break;
-        case HBLANK:
+        case HBLANK: // Mode 00
             if (clocks >= 51) {
                 clocks = 0;
                 ++line;
@@ -87,11 +87,11 @@ void Screen::step(unsigned int lastClocks) {
                 }
             }
         break;
-        case VBLANK:
+        case VBLANK: // Mode 01
             if (clocks >= 114) {
                 clocks = 0;
                 ++line;
-                if (line >= 153) {
+                if (line > 153) {
                     mode = OAM;
                     line = 0;
                     memory->write(0xFF41, memory->read(0xFF41) & 0xFE); // Indicate OAM Mode 10
