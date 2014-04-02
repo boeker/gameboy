@@ -8,11 +8,11 @@
 
 namespace gameboy {
 Screen::Screen(Memory *memory) :
-    clocks(0),
     memory(memory) {
     framebuffer = new util::Color[160 * 144];
 
     reset();
+    clearFramebuffer();
 }
 
 Screen::~Screen() {
@@ -20,12 +20,18 @@ Screen::~Screen() {
 }
 
 void Screen::reset() {
+    enabled = true;
     drawFlag = false;
-    line = 0;
-    mode = OAM;
+    lineRendered = false;
+    setLine(144);
+    clocks = 0;
+    changeMode(VBLANK);
+    delay = 0;
+}
 
+void Screen::clearFramebuffer() {
     for (int i = 0; i < 160*144; ++i) {
-        framebuffer[i].set(0xFF, 0xFF, 0xFF);
+        framebuffer[i] = util::Color::CUR_WHITE;
     }
 }
 
@@ -37,76 +43,117 @@ bool Screen::drawFlagSet() {
     return drawFlag;
 }
 
+void Screen::enable() {
+    delay = 61;
+}
+
+void Screen::disable() {
+    reset();
+    setLine(0);
+    changeMode(HBLANK);
+    enabled = false;
+
+    clearFramebuffer();
+}
+
 void Screen::step(unsigned int lastClocks) {
-    clocks += lastClocks;
     drawFlag = false;
-
-    switch (mode) {
-        case OAM: // Mode 10
-            if (clocks >= 20) {
-                clocks = 0;
-                mode = VRAM;
-                memory->write(0xFF41, memory->read(0xFF41) | 0x03); // Indicate VRAM Mode 11
-            }
-        break;
-        case VRAM: // Mode 11
-            if (clocks >= 43) {
-                clocks = 0;
-                mode = HBLANK;
-                renderScanLine();
-                memory->write(0xFF41, memory->read(0xFF41) & 0xFC); // Indicate H-Blank Mode 00
-                
-                if (memory->read(0xFF41) & 0x08) { // Mode 00 Interrupt
-                    memory->write(0xFF0F, memory->read(0xFF0F) | 0x02); // Set LCD-STAT Interrupt Flag
-                }
-            }
-        break;
-        case HBLANK: // Mode 00
-            if (clocks >= 51) {
-                clocks = 0;
-                ++line;
-                if (line == 144) {
-                    mode = VBLANK;
-                    drawFlag = true;
-                    memory->write(0xFF41, memory->read(0xFF41) & 0xFD); // Indicate V-Blank Mode 01
-                    memory->write(0xFF41, memory->read(0xFF41) | 0x01);
-
-                    if (memory->read(0xFF41) & 0x10) { // Mode 01 Interrupt
-                        memory->write(0xFF0F, memory->read(0xFF0F) | 0x02); // Set LCD-STAT Interrupt Flag
-                    }
-
-                    memory->write(0xFF0F, memory->read(0xFF0F) | 0x01); //Set V-Blank Interrupt Flag
-                } else {
-                    mode = OAM;
-                    memory->write(0xFF41, memory->read(0xFF41) & 0xFE); // Indicate OAM Mode 10
-                    memory->write(0xFF41, memory->read(0xFF41) | 0x02);
-
-                    if (memory->read(0xFF41) & 0x20) { // Mode 10 Interrupt
-                        memory->write(0xFF0F, memory->read(0xFF0F) | 0x02); // Set LCD-STAT Interrupt Flag
-                    }
-                }
-            }
-        break;
-        case VBLANK: // Mode 01
-            if (clocks >= 114) {
-                clocks = 0;
-                ++line;
-                if (line > 153) {
-                    mode = OAM;
-                    line = 0;
-                    memory->write(0xFF41, memory->read(0xFF41) & 0xFE); // Indicate OAM Mode 10
-                    memory->write(0xFF41, memory->read(0xFF41) | 0x02);
-
-                    if (memory->read(0xFF41) & 0x20) { // Mode 10 Interrupt
-                        memory->write(0xFF0F, memory->read(0xFF0F) | 0x02); // Set LCD-STAT Interrupt Flag
-                    }
-                }
-            }
-        break;
+    if (memory->read(0xFF40) & 0x80) { // LCD enabled
+        if (!enabled && delay == 0) {
+            enable();
+        }
+    } else {
+        if (enabled) {
+            disable();
+        }
     }
-    //FF44 - LY - LCDC Y-Coordinate (R)
-    memory->write(0xFF44, static_cast<uint8_t>(line));
 
+    if (enabled) {
+        clocks += lastClocks;
+        switch (mode) {
+            case HBLANK: // Mode 00
+                if (clocks >= 51) {
+                    clocks -= 51;
+                    setLine(line+1);
+
+                    if (line == 144) {
+                        changeMode(VBLANK);
+                        drawFlag = true;
+
+                        if (memory->read(0xFF41) & 0x10) { // Mode 01 Interrupt
+                            memory->write(0xFF0F, memory->read(0xFF0F) | 0x02); // Set LCD-STAT Interrupt Flag
+                        }
+
+                        memory->write(0xFF0F, memory->read(0xFF0F) | 0x01); //Set V-Blank Interrupt Flag
+                    } else {
+                        changeMode(OAM);
+
+                        if (memory->read(0xFF41) & 0x20) { // Mode 10 Interrupt
+                            memory->write(0xFF0F, memory->read(0xFF0F) | 0x02); // Set LCD-STAT Interrupt Flag
+                        }
+                    }
+                }
+            break;
+            case VBLANK: // Mode 01
+                if (clocks >= 114) {
+                    clocks -= 114;
+                    setLine(line+1);
+                    if (line > 153) {
+                        changeMode(OAM);
+                        setLine(0);
+
+                        if (memory->read(0xFF41) & 0x20) { // Mode 10 Interrupt
+                            memory->write(0xFF0F, memory->read(0xFF0F) | 0x02); // Set LCD-STAT Interrupt Flag
+                        }
+                    }
+                }
+            break;
+            case OAM: // Mode 10
+                if (clocks >= 20) {
+                    clocks -= 20;
+                    changeMode(VRAM);
+                    lineRendered = false;
+                }
+            break;
+            case VRAM: // Mode 11
+                if (!lineRendered && (clocks >= (line ? 12 : 40))) {
+                    lineRendered = true;
+                    renderScanLine();
+                }
+                if (clocks >= 43) {
+                    clocks -= 43;
+                    changeMode(HBLANK);
+                    
+                    if (memory->read(0xFF41) & 0x08) { // Mode 00 Interrupt
+                        memory->write(0xFF0F, memory->read(0xFF0F) | 0x02); // Set LCD-STAT Interrupt Flag
+                    }
+                }
+            break;
+        }
+        compareLYLYC();
+    } else {
+        if (delay > 0) { // LCD is about to be enabled
+            delay -= lastClocks;
+            if (delay <= 0) {
+                reset();
+                enabled = true;
+                clocks = -delay;
+                delay = 0;
+                setLine(0);
+                changeMode(HBLANK);
+                compareLYLYC();
+            }
+        } else {
+            clocks += lastClocks;
+            if (clocks >= 70224) {
+                clocks -= 70224;
+                drawFlag = true;
+            }
+        }
+    }
+}
+
+void Screen::compareLYLYC() {
     // FF41 (STAT)
     uint8_t stat = memory->read(0xFF41);
 
@@ -121,6 +168,19 @@ void Screen::step(unsigned int lastClocks) {
     } else {
         memory->write(0xFF41, stat & 0xFB); // Clear Coincidence Flag
     }
+}
+
+void Screen::setLine(unsigned int l) {
+    line = l;
+    memory->write(0xFF44, static_cast<uint8_t>(line));
+}
+
+void Screen::changeMode(Mode m) {
+    mode = m;
+
+    uint8_t stat = memory->read(0xFF41) & 0xFC;
+    stat |= static_cast<uint8_t>(m);
+    memory->write(0xFF41, stat);
 }
 
 void Screen::renderScanLine() {

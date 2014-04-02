@@ -37,6 +37,7 @@ void Core::reset() {
     registers->reset();
     memory->reset();
     screen->reset();
+    screen->clearFramebuffer();
     conditional = false;
     clock = 0;
 }
