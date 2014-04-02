@@ -9,7 +9,7 @@ namespace gameboy {
 namespace mbc {
 class MBC3TIMRAMBATT : public MBC3TIM {
  public:
-    MBC3TIMRAMBATT(uint8_t **romBanks, uint8_t numBanks, uint8_t **ramBanks, uint8_t numRam, uint16_t length, const std::string& save);
+    MBC3TIMRAMBATT(uint8_t **romBanks, uint8_t numBanks, const std::string& rtc, uint8_t **ramBanks, uint8_t numRam, uint16_t length, const std::string& save);
     virtual ~MBC3TIMRAMBATT();
     virtual void write(uint16_t address, uint8_t value);
 

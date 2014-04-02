@@ -2,8 +2,8 @@
 
 namespace gameboy {
 namespace mbc {
-MBC3TIMRAMBATT::MBC3TIMRAMBATT(uint8_t **romBanks, uint8_t numBanks, uint8_t **ramBanks, uint8_t numRam, uint16_t length, const std::string& save) :
-    MBC3TIM(romBanks, numBanks),
+MBC3TIMRAMBATT::MBC3TIMRAMBATT(uint8_t **romBanks, uint8_t numBanks, const std::string& rtc, uint8_t **ramBanks, uint8_t numRam, uint16_t length, const std::string& save) :
+    MBC3TIM(romBanks, numBanks, rtc),
     ramBanks(ramBanks),
     numOfRAMBanks(numRam),
     ramLength(length),

@@ -160,6 +160,7 @@ void Memory::loadROM(const std::string &file) {
     }
 
     std::string saveFile = file.substr(0, file.find_last_of('.')) + ".sav";
+    std::string rtcFile = file.substr(0, file.find_last_of('.')) + ".rtc";
 
     uint8_t cartridgeType = rom[0x0147];
     switch (cartridgeType) {
@@ -200,10 +201,10 @@ void Memory::loadROM(const std::string &file) {
             mbc = new mbc::MBC5RAMBATT(romBanks, numBanks, ramBanks, numRamBanks, ramLength, saveFile);
         break;
         case 0x0F: // MBC3 + TIMER + BATTERY
-            mbc = new mbc::MBC3TIM(romBanks, numBanks);
+            mbc = new mbc::MBC3TIM(romBanks, numBanks, rtcFile);
         break;
         case 0x10: // MBC3 + TIMER + RAM + BATTERY
-            mbc = new mbc::MBC3TIMRAMBATT(romBanks, numBanks, ramBanks, numRamBanks, ramLength, saveFile);
+            mbc = new mbc::MBC3TIMRAMBATT(romBanks, numBanks, rtcFile, ramBanks, numRamBanks, ramLength, saveFile);
         break;
         case 0x11: // MBC3
             mbc = new mbc::MBC3(romBanks, numBanks);

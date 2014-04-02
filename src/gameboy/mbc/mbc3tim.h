@@ -9,7 +9,7 @@ namespace gameboy {
 namespace mbc {
 class MBC3TIM : public MBC3 {
  public:
-    MBC3TIM(uint8_t **romBanks, uint8_t numBanks);
+    MBC3TIM(uint8_t **romBanks, uint8_t numBanks, const std::string& rtc);
     virtual ~MBC3TIM();
     virtual void write(uint16_t address, uint8_t value);
 
@@ -23,6 +23,8 @@ class MBC3TIM : public MBC3 {
     bool timEnabled;
     uint8_t *rtcRegisters;
     uint8_t currentRegister;
+    const std::string rtcFile;
+    time_t dayCounterStart;
     // RTC S Seconds 0-59
     // RTC M Minutes 0-59
     // RTC H Hours 0-23
@@ -30,6 +32,8 @@ class MBC3TIM : public MBC3 {
     // RTC DH Upper 1 bit of Day Counter (Bit 0)
         // Halt Flag (Bit 6, 0 = Active, 1 = Stop Timer)
         // Day Counter Carry (Bit 7, 1 = Counter Overflow)
+ private:
+    unsigned int daysSince1900(struct tm *date);
 };
 }
 }
