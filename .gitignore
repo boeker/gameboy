@@ -1,4 +1,6 @@
 *.gb
+*.sav
+*.rtc
 ui_*
 moc_*
 *.o
