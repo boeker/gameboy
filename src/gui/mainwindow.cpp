@@ -43,9 +43,9 @@ MainWindow::MainWindow(QWidget *parent) :
     debuggerWindow = new DebuggerWindow(this, gameboyCore, this, emuThread);
 
     connect(emuThread, &EmuThread::started,
-            this,      &MainWindow::resumed);
+            this,      &MainWindow::threadResumed);
     connect(emuThread, &EmuThread::finished,
-            this,      &MainWindow::paused);
+            this,      &MainWindow::threadPaused);
 
     QStringList args = QCoreApplication::arguments();
     if (args.size() > 1) {
@@ -74,6 +74,7 @@ void MainWindow::loadROM(const QString &file) {
     gameboyCore->reset();
     gameboyCore->loadROM(file.toStdString());
 
+    ui->actionPause->setEnabled(true);
     ui->actionReset->setEnabled(true);
     continueEmulation();
 }
@@ -86,6 +87,14 @@ void MainWindow::debugger() {
     }
     
     debuggerWindow->refresh();   
+}
+
+void MainWindow::pause(bool checked) {
+    if (checked) {
+        pauseEmulation();
+    } else {
+        continueEmulation();
+    }
 }
 
 void MainWindow::continueEmulation() {
@@ -102,14 +111,12 @@ void MainWindow::pauseEmulation() {
     }
 }
 
-void MainWindow::resumed() {
-    ui->actionContinue->setEnabled(false);
-    ui->actionPause->setEnabled(true);
+void MainWindow::threadResumed() {
+    ui->actionPause->setChecked(false);
 }
 
-void MainWindow::paused() {
-    ui->actionContinue->setEnabled(true);
-    ui->actionPause->setEnabled(false);
+void MainWindow::threadPaused() {
+    ui->actionPause->setChecked(true);
 }
 
 void MainWindow::loadROM() {

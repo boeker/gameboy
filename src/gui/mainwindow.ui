@@ -43,7 +43,6 @@
      <string>File</string>
     </property>
     <addaction name="actionOpen"/>
-    <addaction name="actionContinue"/>
     <addaction name="actionPause"/>
     <addaction name="actionReset"/>
     <addaction name="actionQuit"/>
@@ -78,6 +77,9 @@
   <action name="actionOpen">
    <property name="text">
     <string>Open...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
    </property>
   </action>
   <action name="action1x">
@@ -118,20 +120,18 @@
     <string>6x</string>
    </property>
   </action>
-  <action name="actionContinue">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Continue</string>
-   </property>
-  </action>
   <action name="actionPause">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="enabled">
     <bool>false</bool>
    </property>
    <property name="text">
     <string>Pause</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
    </property>
   </action>
   <action name="actionDebugger">
@@ -145,6 +145,9 @@
    </property>
    <property name="text">
     <string>Reset</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
    </property>
   </action>
   <action name="actionDMGColors">
@@ -250,26 +253,10 @@
    </hints>
   </connection>
   <connection>
-   <sender>actionContinue</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>continueEmulation()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>174</x>
-     <y>166</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>actionPause</sender>
-   <signal>triggered()</signal>
+   <signal>triggered(bool)</signal>
    <receiver>MainWindow</receiver>
-   <slot>pauseEmulation()</slot>
+   <slot>pause(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
@@ -357,7 +344,8 @@
   <slot>debugger()</slot>
   <slot>reset()</slot>
   <slot>useDMGColors(bool)</slot>
-  <slot>paused()</slot>
-  <slot>resumed()</slot>
+  <slot>threadPaused()</slot>
+  <slot>threadResumed()</slot>
+  <slot>pause(bool)</slot>
  </slots>
 </ui>

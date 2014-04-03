@@ -31,10 +31,11 @@ class MainWindow : public QMainWindow {
 
  public slots:
     void debugger();
+    void pause(bool checked);
     void continueEmulation();
     void pauseEmulation();
-    void resumed();
-    void paused();
+    void threadResumed();
+    void threadPaused();
     void loadROM();
     void reset();
     void scale1x();
