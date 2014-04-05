@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QDropEvent>
 #include <QFileDialog>
+#include <QGLFormat>
 #include <QKeyEvent>
 #include <QMimeData>
 #include <QString>
@@ -12,6 +13,7 @@
 #include "debuggerwindow.h"
 #include "screenwidget.h"
 #include "emuthread.h"
+#include "gameboy/audio.h"
 #include "gameboy/core.h"
 #include "gameboy/keyboard.h"
 
@@ -29,8 +31,11 @@ MainWindow::MainWindow(QWidget *parent) :
     gameboyCore = new gameboy::Core;
 
     keyboard = gameboyCore->getKeyboard();
+    
+    QGLFormat format = QGLFormat::defaultFormat();
+    format.setDoubleBuffer(true);
 
-    screenWidget = new ScreenWidget(this);
+    screenWidget = new ScreenWidget(format, this);
     screenWidget->setFramebuffer(gameboyCore->getFramebuffer());
     setCentralWidget(screenWidget);
 
@@ -138,6 +143,10 @@ void MainWindow::reset() {
     if (wasRunning) {
         continueEmulation();
     }
+}
+
+void MainWindow::enableSound(bool enabled) {
+    emuThread->soundEnabled = enabled;
 }
 
 void MainWindow::scale1x() {

@@ -2,12 +2,13 @@
 #define GUI_SCREENWIDGET_H
 
 #include <QGLWidget>
+#include <QGLFormat>
 #include <atomic>
 #include "util/color.h"
 
 class ScreenWidget : public QGLWidget {
  public:
-    explicit ScreenWidget(QWidget *parent);
+    explicit ScreenWidget(const QGLFormat &format, QWidget *parent);
     void setFramebuffer(util::Color *fb);
     void resizeEvent(QResizeEvent *event);
     void paintEvent(QPaintEvent *);

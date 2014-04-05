@@ -38,6 +38,7 @@ class MainWindow : public QMainWindow {
     void threadPaused();
     void loadROM();
     void reset();
+    void enableSound(bool enabled);
     void scale1x();
     void scale2x();
     void scale4x();

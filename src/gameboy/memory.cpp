@@ -19,9 +19,11 @@
 #include "mbc/mbc5.h"
 #include "mbc/mbc5ram.h"
 #include "mbc/mbc5rambatt.h"
+#include "audio.h"
 
 namespace gameboy {
-Memory::Memory() {
+Memory::Memory(Audio *audio) :
+    audio(audio) {
     ieReg = new uint8_t;
     highRam = new uint8_t[127];
     ioPorts = new uint8_t[224];
@@ -225,7 +227,9 @@ void Memory::loadROM(const std::string &file) {
 }
 
 uint8_t Memory::read(uint16_t address) {
-    if ((address >= 0xA000) && (address <= 0xBFFF)) {
+    if (address >= audio->startAddress && address <= audio->endAddress) {
+        return audio->read(address);
+    } else if ((address >= 0xA000) && (address <= 0xBFFF)) {
         return mbc->readRAM(address - 0xA000);
     } else {
         uint8_t *memLoc = resolveAddress(address);
@@ -234,7 +238,9 @@ uint8_t Memory::read(uint16_t address) {
 }
 
 void Memory::write(uint16_t address, uint8_t value) {
-    if (address <= 0x7FFF) { // Write to ROM
+    if (address >= audio->startAddress && address <= audio->endAddress) {
+        audio->write(address, value);
+    } else if (address <= 0x7FFF) { // Write to ROM
         mbc->write(address, value);
         romBank = mbc->getCurrentROMBank();
     } else if ((address >= 0xA000) && (address <= 0xBFFF)) {

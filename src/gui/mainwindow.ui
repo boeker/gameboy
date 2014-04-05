@@ -65,6 +65,7 @@
      <addaction name="actionDMGColors"/>
     </widget>
     <addaction name="menuVideo"/>
+    <addaction name="actionSound"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
@@ -169,6 +170,17 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+W</string>
+   </property>
+  </action>
+  <action name="actionSound">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Sound</string>
    </property>
   </action>
  </widget>
@@ -334,6 +346,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionSound</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>enableSound(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>174</x>
+     <y>166</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>scale1x()</slot>
@@ -349,5 +377,6 @@
   <slot>threadPaused()</slot>
   <slot>threadResumed()</slot>
   <slot>pause(bool)</slot>
+  <slot>enableSound(bool)</slot>
  </slots>
 </ui>

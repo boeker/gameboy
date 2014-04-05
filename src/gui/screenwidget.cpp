@@ -2,8 +2,8 @@
 
 #include <QResizeEvent>
 
-ScreenWidget::ScreenWidget(QWidget *parent) :
-    QGLWidget(parent),
+ScreenWidget::ScreenWidget(const QGLFormat &format, QWidget *parent) :
+    QGLWidget(format, parent),
     resizeNeeded(false),
     width(160),
     height(144) {

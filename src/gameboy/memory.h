@@ -33,6 +33,7 @@ Echo of 8kB Internal RAM
 */
 
 namespace gameboy {
+class Audio;
 namespace mbc {
 class MemoryBankController;
 }
@@ -41,7 +42,7 @@ class MemoryBankController;
 namespace gameboy {
 class Memory {
  public:
-    explicit Memory();
+    explicit Memory(Audio *audio);
     virtual ~Memory();
     void reset();
     void loadROM(const std::string &file);
@@ -69,6 +70,7 @@ class Memory {
     uint8_t *rom;           // 0000-3FFF, 16384 bytes
 
     mbc::MemoryBankController *mbc;
+    Audio *audio;
 };
 }
 

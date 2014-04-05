@@ -1,3 +1,3 @@
 # gameboy
 
-"gameboy" is my approach to develop a basic Game Boy (Classic) emulator.
+"gameboy" is my attempt to develop a basic Game Boy (Classic) emulator.

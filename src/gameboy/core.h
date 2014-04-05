@@ -12,6 +12,7 @@ class Color;
 }
 
 namespace gameboy {
+class Audio;
 class CPURegisters;
 class Keyboard;
 class Memory;
@@ -38,7 +39,9 @@ class Core {
     void emulateUntilVBlank() throw (exceptions::Breakpoint);
     void updateKeyRegister();
 
+ public:
     CPURegisters *registers;
+    Audio *audio;
     Memory *memory;
 
     std::atomic<int32_t> breakpoint;

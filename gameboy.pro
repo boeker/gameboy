@@ -5,10 +5,16 @@ INCLUDEPATH += src
 CONFIG += c++11 console debug
 #DEFINES += QT_NO_DEBUG_OUTPUT
 
+LIBS += -lSDL2
+
+FORMS += src/gui/mainwindow.ui \
+         src/gui/debuggerwindow.ui
+
 HEADERS += src/gui/mainwindow.h \
            src/gui/screenwidget.h \
            src/gui/emuthread.h \
            src/gui/debuggerwindow.h \
+           src/gameboy/audio.h \
            src/gameboy/core.h \
            src/gameboy/cpuregisters.h \
            src/gameboy/keyboard.h \
@@ -32,11 +38,13 @@ HEADERS += src/gui/mainwindow.h \
            src/gameboy/mbc/mbc5rambatt.h \
            src/util/color.h
            src/exceptions/breakpoint.h
+
 SOURCES += src/main.cpp \
            src/gui/mainwindow.cpp \
            src/gui/screenwidget.cpp \
            src/gui/emuthread.cpp \
            src/gui/debuggerwindow.cpp \
+           src/gameboy/audio.cpp \
            src/gameboy/core.cpp \
            src/gameboy/core_opcodes.cpp \
            src/gameboy/core_opcodetables.cpp \
@@ -62,5 +70,23 @@ SOURCES += src/main.cpp \
            src/gameboy/mbc/mbc5ram.cpp \
            src/gameboy/mbc/mbc5rambatt.cpp \
            src/util/color.cpp
-FORMS += src/gui/mainwindow.ui \
-         src/gui/debuggerwindow.ui
+
+#blarrg's sound lib
+HEADERS += src/gameboy/apu/blargg_common.h \
+           src/gameboy/apu/blargg_config.h \
+           src/gameboy/apu/blargg_source.h \
+           src/gameboy/apu/Blip_Buffer.h \
+           src/gameboy/apu/Blip_Synth.h \
+           src/gameboy/apu/Effects_Buffer.h \
+           src/gameboy/apu/Gb_Apu.h \
+           src/gameboy/apu/Gb_Oscs.h \
+           src/gameboy/apu/Multi_Buffer.h \
+           src/gameboy/apu/Sound_Queue.h
+
+SOURCES += src/gameboy/apu/Blip_Buffer.cpp \
+           src/gameboy/apu/Effects_Buffer.cpp \
+           src/gameboy/apu/Gb_Apu.cpp \
+           src/gameboy/apu/Gb_Apu_State.cpp \
+           src/gameboy/apu/Gb_Oscs.cpp \
+           src/gameboy/apu/Multi_Buffer.cpp \
+           src/gameboy/apu/Sound_Queue.cpp

@@ -5,6 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <QDebug>
+#include "audio.h"
 #include "cpuregisters.h"
 #include "keyboard.h"
 #include "memory.h"
@@ -14,7 +15,8 @@
 namespace gameboy {
 Core::Core() :
     registers(new CPURegisters),
-    memory(new Memory),
+    audio(new Audio),
+    memory(new Memory(audio)),
     breakpoint(-1),
     screen(new Screen(memory)),
     timer(new Timer(memory)),
@@ -27,6 +29,7 @@ Core::~Core() {
     delete screen;
     delete memory;
     delete registers;
+    delete audio;
 }
 
 void Core::loadROM(const std::string &file) {
@@ -34,6 +37,7 @@ void Core::loadROM(const std::string &file) {
 }
 
 void Core::reset() {
+    audio->reset();
     registers->reset();
     memory->reset();
     screen->reset();
@@ -97,6 +101,7 @@ void Core::emulateCycle() {
     }
 
     clock += lastClocks;
+    audio->step(lastClocks);
     screen->step(lastClocks);
     timer->step(lastClocks);
     updateKeyRegister();
@@ -123,6 +128,7 @@ void Core::emulateUntilVBlank() throw (exceptions::Breakpoint) {
         }
         emulateCycle();
     } while (!screen->drawFlagSet());
+    audio->endFrame();
 }
 
 void Core::updateKeyRegister() { //Keys are active-low
