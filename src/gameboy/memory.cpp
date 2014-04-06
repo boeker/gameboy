@@ -227,7 +227,7 @@ void Memory::loadROM(const std::string &file) {
 }
 
 uint8_t Memory::read(uint16_t address) {
-    if (address >= audio->startAddress && address <= audio->endAddress) {
+    if (address >= 0xFF10 && address <= 0xFF3F) {
         return audio->read(address);
     } else if ((address >= 0xA000) && (address <= 0xBFFF)) {
         return mbc->readRAM(address - 0xA000);
@@ -238,7 +238,7 @@ uint8_t Memory::read(uint16_t address) {
 }
 
 void Memory::write(uint16_t address, uint8_t value) {
-    if (address >= audio->startAddress && address <= audio->endAddress) {
+    if (address >= 0xFF10 && address <= 0xFF3F) {
         audio->write(address, value);
     } else if (address <= 0x7FFF) { // Write to ROM
         mbc->write(address, value);

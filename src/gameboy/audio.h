@@ -25,8 +25,6 @@ class Audio {
     void endFrame();
 
  public:
-    static const int startAddress = Gb_Apu::start_addr;
-    static const int endAddress = Gb_Apu::end_addr;
     static const int sampleBufferSize = 8192;
     static const int sampleRate = 44100;
 
