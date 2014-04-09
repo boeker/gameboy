@@ -38,6 +38,10 @@ void EmuThread::run() {
                 if (soundEnabled && gameboyCore->audio->getPlayFlag()) {
                     soundQueue->write(gameboyCore->audio->getSampleBuffer(), gameboyCore->audio->getSampleCount());
                 }
+                if (screenWidget->resizeNeeded) {
+                     screenWidget->resizePub(screenWidget->newWidth, screenWidget->newHeight);
+                     screenWidget->resizeNeeded = false;
+                }
 
                 screenWidget->updateGL();
             } catch (exceptions::Breakpoint& bp) {
