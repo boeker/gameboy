@@ -1,3 +1,6 @@
+// Copyright (c) 2014 Jan Böker
+// MIT License
+
 #include "mbc3timrambatt.h"
 
 namespace gameboy {

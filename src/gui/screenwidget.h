@@ -1,3 +1,6 @@
+// Copyright (c) 2014 Jan Böker
+// MIT License
+
 #ifndef GUI_SCREENWIDGET_H
 #define GUI_SCREENWIDGET_H
 

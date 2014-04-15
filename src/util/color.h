@@ -1,3 +1,6 @@
+// Copyright (c) 2014 Jan Böker
+// MIT License
+
 #ifndef UTIL_COLOR_H
 #define UTIL_COLOR_H
 

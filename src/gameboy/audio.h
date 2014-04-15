@@ -1,3 +1,6 @@
+// Copyright (c) 2014 Jan Böker
+// MIT License
+
 #ifndef GAMEBOY_AUDIO_H
 #define GAMEBOY_AUDIO_H
 

@@ -1,3 +1,6 @@
+// Copyright (c) 2014 Jan Böker
+// MIT License
+
 #ifndef GAMEBOY_SCREEN_H
 #define GAMEBOY_SCREEN_H
 
